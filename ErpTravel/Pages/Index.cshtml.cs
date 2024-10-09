@@ -1,16 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
 
 public class IndexModel : PageModel
 {
+    public List<string> Itinerary { get; set; } = new List<string>();
     public IActionResult OnGet()
     {
+        
         // Check if the user is logged in
         if (HttpContext.Session.GetString("IsLoggedIn") != "true")
         {
             // If not logged in, redirect to the login page
             return RedirectToPage("/Login");
         }
+        if (Itinerary == null)
+        {
+            Itinerary = new List<string>();
+        }
+
 
         return Page();
     }
@@ -51,7 +59,7 @@ public class IndexModel : PageModel
     public decimal RentPerDay { get; set; }
     public decimal TotalRent { get; set; }
 
-   
+    public List<string> Itinerary { get; set; } = new List<string>();
 
     private void CalculateVehicleAndRent(int totalPeople)
     {
@@ -78,6 +86,41 @@ public class IndexModel : PageModel
 
         TotalRent = RentPerDay * Days;
      }
+
+    private void InitializeSingaporeItinerary(int days)
+    {
+        Itinerary = new List<string>();
+
+        for (int i = 1; i <= days; i++)
+        {
+            string activity = $"Day {i}: ";
+
+            switch (i)
+            {
+                case 1:
+                    activity += "Arrival in Singapore - Transfer to hotel and leisure time.";
+                    break;
+                case 2:
+                    activity += "Singapore City Tour - Visit Marina Bay Sands, Merlion Park, Chinatown.";
+                    break;
+                case 3:
+                    activity += "Sentosa Island Tour - Explore Universal Studios, S.E.A. Aquarium, and more.";
+                    break;
+                case 4:
+                    activity += "Free Day for Shopping and Local Exploration.";
+                    break;
+                case 5:
+                    activity += "Visit Chinatown,Chinatown Heritage Centre and Fort Canning Park.";
+                    break;
+                default:
+                    activity += "Free Day - Explore as you wish!";
+                    break;
+            }
+
+            Itinerary.Add(activity);
+        }
+    }
+
 
     public void OnPostCalculate()
     {
@@ -111,13 +154,37 @@ public class IndexModel : PageModel
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
 
+        InitializeSingaporeItinerary(Days);
+
         TempData["Message"] = $"Booking successful! Total amount:  INR {TotalAmount}. Vehicle suggested: {SuggestedVehicle}, Vehicle Rent: INR {TotalRent}.";
+
+   
     }
 
-    public void OnPostSubmit()
+    public IActionResult OnPostSubmit()
     {
-        // Optionally process the booking or save to the database
-        TempData["Message"] = $"Booking has been created! Total amount: INR {TotalAmount}";
+        // Perform all necessary calculations here
+        int totalPeople = Adults + Children;
+        CalculateVehicleAndRent(totalPeople);
+        OnPostCalculate();  // Calculate the total amount for rooms and other expenses
+
+        // Save the data in TempData to pass to the Quotation page
+        TempData["RoomType"] = RoomType;
+        TempData["Rooms"] = Rooms;
+        TempData["Nights"] = Nights;
+        TempData["ExtraBeds"] = ExtraBeds;
+        TempData["ChildrenWithBed"] = ChildrenWithBed;
+        TempData["ChildrenWithoutBed"] = ChildrenWithoutBed;
+        TempData["TotalAmount"] = TotalAmount;
+        TempData["SuggestedVehicle"] = SuggestedVehicle;
+        TempData["RentPerDay"] = RentPerDay;
+        TempData["TotalRent"] = TotalRent;
+
+        // Convert Itinerary list to TempData format
+        TempData["Itinerary"] = Itinerary;
+
+        // Redirect to the Quotation page
+        return RedirectToPage("/Quotation");
     }
 }
 

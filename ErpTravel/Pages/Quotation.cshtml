@@ -1,0 +1,53 @@
+﻿@page
+@model QuotationModel
+@{
+    ViewData["Title"] = "Booking Quotation";
+}
+
+<h1>Booking Quotation</h1>
+
+<div class="quotation-container">
+    <h4>Hotel Booking</h4>
+    <p><strong>Room Type:</strong> @Model.RoomType</p>
+    <p><strong>Number of Rooms:</strong> @Model.Rooms</p>
+    <p><strong>Number of Nights:</strong> @Model.Nights</p>
+    <p><strong>Extra Beds:</strong> @Model.ExtraBeds</p>
+    <p><strong>Children with Bed:</strong> @Model.ChildrenWithBed</p>
+    <p><strong>Children without Bed:</strong> @Model.ChildrenWithoutBed</p>
+    <p><strong>Total Amount (Rooms):</strong> INR @Model.TotalAmount</p>
+
+    <h4>Transportation</h4>
+    <p><strong>Suggested Vehicle:</strong> @Model.SuggestedVehicle</p>
+    <p><strong>Vehicle Rent per Day:</strong> INR @Model.RentPerDay</p>
+    <p><strong>Total Vehicle Rent:</strong> INR @Model.TotalRent</p>
+
+    <h4>Itinerary</h4>
+    @if (Model.Itinerary != null && Model.Itinerary.Any())
+    {
+        <ul>
+            @foreach (var itineraryItem in Model.Itinerary)
+            {
+                <li>@itineraryItem</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No itinerary available.</p>
+    }
+
+    <h4>Total Quotation:</h4>
+    <p><strong>Total Amount (Rooms + Vehicle):</strong> INR @Model.GrandTotal</p>
+</div>
+
+<style>
+    .quotation-container {
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    h4 {
+        margin-top: 20px;
+    }
+</style>

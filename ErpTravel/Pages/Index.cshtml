@@ -5,20 +5,21 @@
 }
 
 <h1>Travel Agency Booking Form</h1>
-
-<form method="post">
+<div class="container">
+    <div class="form-container">
+        <form method="post" asp-page="/Quotation">
     
-    <label for="adults">Number of Adults</label>
-    <input type="number" id="adults" name="Adults" required />
+         <label for="adults">Number of Adults</label>
+         <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion()"/>
 
-    <label for="children">Number of Children</label>
-    <input type="number" id="children" name="Children" min="0" required />
+         <label for="children">Number of Children</label>
+         <input type="number" id="children" name="Children" min="0" required oninput="updateVehicleSuggestion()" />
 
-    <label for="days">Number of Days</label>
-    <input type="number" id="days" name="Days" min="1" required />
+         <label for="days">Number of Days</label>
+         <input type="number" id="days" name="Days" min="1" required oninput="updateVehicleSuggestion()" />
 
-    <label for="nights">Number of Nights</label>
-    <input type="number" id="nights" name="Nights" min="1" required />
+         <label for="nights">Number of Nights</label>
+         <input type="number" id="nights" name="Nights" min="1" required oninput="calculateTotal()" />
 
  
     <h4>Hotel Room Booking</h4>
@@ -64,11 +65,41 @@
 
     
 </form>
+</div>
 
-@if (TempData["Message"] != null)
-{
-    <p>@TempData["Message"]</p>
-}
+    <div class="itinerary-container">
+        <h4>Itinerary</h4>
+        <div class="itinerary" id="itinerary">
+            <!-- This will be populated by JavaScript -->
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 20px;
+    }
+
+    .form-container {
+        flex: 4; /* Takes up available space */
+        padding-right: 50px; /* Space between form and itinerary */
+    }
+
+    .itinerary-container {
+        flex: auto auto 30%; /* Fixed width for itinerary container */
+        border-left: 2px solid #ccc; /* Optional styling for separation */
+        padding-left: 20px; /* Space inside itinerary container */
+    }
+
+    .itinerary p {
+        margin: 5px 0; /* Spacing between itinerary items */
+    }
+</style>
+
+
 <script>
     function calculateTotal() {
         // Get the values from the form
@@ -125,10 +156,36 @@
         document.getElementById("vehicle-rent").textContent = `Vehicle Rent per Day: ${suggestedVehicle.rentPerDay}. Total Rent for ${days} day(s): ${vehicleRent}`;
     }
 
+    function updateItinerary() {
+        var days = parseInt(document.getElementById("days").value) || 0;
+        var itineraryDiv = document.getElementById("itinerary");
+        itineraryDiv.innerHTML = ""; // Clear previous itinerary
+
+        // Define your itinerary template
+        var itineraryTemplate = [
+            "Day 1: Arrival in Singapore - Transfer to hotel and leisure time.",
+            "Day 2: Singapore City Tour - Visit Marina Bay Sands, Merlion Park, Chinatown.",
+            "Day 3: Sentosa Island Tour - Explore Universal Studios, S.E.A. Aquarium, and more.",
+            "Day 4: Free Day for Shopping and Local Exploration.",
+            "Day 5: Visit Chinatown,Chinatown Heritage Centre and Fort Canning Park."
+        ];
+
+        // Generate itinerary based on selected days
+        for (var i = 0; i < days; i++) {
+            if (i < itineraryTemplate.length) {
+                itineraryDiv.innerHTML += "<p>" + itineraryTemplate[i] + "</p>";
+            }
+        }
+    }
+    document.getElementById("days").addEventListener("input", function () {
+        updateItinerary(); // Update itinerary when days are changed
+    }); 
+
     // Initial calculation on page load
     window.onload = function () {
         calculateTotal();
         updateVehicleSuggestion();
+        updateItinerary(); // Initialize the itinerary
     };
 
 </script>
