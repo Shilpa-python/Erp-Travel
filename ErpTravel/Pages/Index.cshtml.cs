@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class IndexModel : PageModel
 {
-    public List<string> Itinerary { get; set; } = new List<string>();
+   
     public IActionResult OnGet()
     {
         
@@ -14,10 +14,7 @@ public class IndexModel : PageModel
             // If not logged in, redirect to the login page
             return RedirectToPage("/Login");
         }
-        if (Itinerary == null)
-        {
-            Itinerary = new List<string>();
-        }
+        
 
 
         return Page();
@@ -151,6 +148,7 @@ public class IndexModel : PageModel
 
     public void OnPost()
     {
+
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
 

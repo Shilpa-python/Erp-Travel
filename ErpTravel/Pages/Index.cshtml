@@ -7,7 +7,7 @@
 <h1>Travel Agency Booking Form</h1>
 <div class="container">
     <div class="form-container">
-        <form method="post" asp-page="/Quotation">
+        <form method="post" asp-page="/Quotation" id="bookingForm">
     
          <label for="adults">Number of Adults</label>
          <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion()"/>
@@ -50,6 +50,7 @@
 
     <label>Total Amount :</label>
     <span id="totalAmount">INR 0</span>
+    <input type="hidden" id="totalAmountHidden" name="TotalRoomAmount" />
     <br><br>
 
     <h4>Transportation</h4>
@@ -59,13 +60,15 @@
         <!-- This will be filled automatically based on total number of people -->
     </select>
 
-    <p id="vehicle-rent"></p> <!-- Display vehicle rent per day -->
+    <p id="vehicle-rent"></p>
+    <input type="hidden" id="vehicleRentHidden" name="TotalVehicleRent" /><!-- Display vehicle rent per day -->
 
     <input type="submit" value="Submit" />
 
     
 </form>
 </div>
+
 
     <div class="itinerary-container">
         <h4>Itinerary</h4>
@@ -79,23 +82,23 @@
 <style>
     .container {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: flex-start;
         margin-top: 20px;
     }
 
     .form-container {
-        flex: 4; /* Takes up available space */
-        padding-right: 50px; /* Space between form and itinerary */
+        flex: 1; /* Takes up available space */
+        padding-right: 20px; /* Space between form and itinerary */
     }
 
     .itinerary-container {
-        flex: auto auto 30%; /* Fixed width for itinerary container */
-        border-left: 2px solid #ccc; /* Optional styling for separation */
+        flex: 0 0 30%; /* Fixed width for itinerary container */
+        border-left: 1px solid #ccc; /* Optional styling for separation */
         padding-left: 20px; /* Space inside itinerary container */
     }
 
     .itinerary p {
-        margin: 5px 0; /* Spacing between itinerary items */
+        margin: 10px 0; /* Spacing between itinerary items */
     }
 </style>
 
@@ -123,6 +126,7 @@
 
         // Display the total amount
         document.getElementById("totalAmount").textContent = "INR " + totalAmount.toFixed(2);
+        document.getElementById("totalAmountHidden").value = totalAmount;
     }
 
     function updateVehicleSuggestion() {
@@ -154,6 +158,7 @@
 
         var vehicleRent = suggestedVehicle.rentPerDay * days;
         document.getElementById("vehicle-rent").textContent = `Vehicle Rent per Day: ${suggestedVehicle.rentPerDay}. Total Rent for ${days} day(s): ${vehicleRent}`;
+        document.getElementById("vehicleRentHidden").value = vehicleRent;
     }
 
     function updateItinerary() {
