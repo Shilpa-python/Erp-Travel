@@ -10,13 +10,13 @@
         <form method="post" asp-page="/Quotation" id="bookingForm">
     
          <label for="adults">Number of Adults</label>
-         <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion()"/>
+            <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion(); updateItinerary();" />
 
          <label for="children">Number of Children</label>
-         <input type="number" id="children" name="Children" min="0" required oninput="updateVehicleSuggestion()" />
+            <input type="number" id="children" name="Children" min="0" required oninput="updateVehicleSuggestion(); updateItinerary();" />
 
          <label for="days">Number of Days</label>
-         <input type="number" id="days" name="Days" min="1" required oninput="updateVehicleSuggestion()" />
+            <input type="number" id="days" name="Days" min="1" required oninput="updateVehicleSuggestion(); updateItinerary();" />
 
          <label for="nights">Number of Nights</label>
          <input type="number" id="nights" name="Nights" min="1" required oninput="calculateTotal()" />
@@ -26,9 +26,6 @@
 
     <label for="rooms">Number of Rooms</label>
     <input type="number" id="rooms" name="Rooms" min="1" max="100" required oninput="calculateTotal()" />
-
-   
-
 
     <label for="cwb">Number of Children with Bed</label>
     <input type="number" id="cwb" name="ChildrenWithBed" />
@@ -43,8 +40,8 @@
     <select id="room" name="RoomType" onchange="calculateTotal()">
         <option value="Select">Select</option>
         <option value="Superior" data-price="1500">Superior room - INR 1500</option>
-        <option value="Del" data-price="2000">Deluxe room - INR 2000</option>
-        <option value="Del prem" data-price="2500">Deluxe Premiere room - INR 2500</option>
+        <option value="Deluxe" data-price="2000">Deluxe room - INR 2000</option>
+        <option value="Deluxe prem" data-price="2500">Deluxe Premiere room - INR 2500</option>
         <option value="Fam suite" data-price="3000">Family suite - INR 3000</option>
     </select>
 
@@ -57,8 +54,11 @@
 
     <label for="vehicle">Suggested Vehicle</label>
     <select id="vehicle" name="Vehicle" required readonly>
-        <!-- This will be filled automatically based on total number of people -->
+               <!-- This will be filled automatically based on total number of people -->
     </select>
+
+    <input type="hidden" id="suggestedVehicleHidden" name="SuggestedVehicle" />
+
 
     <p id="vehicle-rent"></p>
     <input type="hidden" id="vehicleRentHidden" name="TotalVehicleRent" /><!-- Display vehicle rent per day -->
@@ -154,11 +154,15 @@
         }
 
         var vehicleSelect = document.getElementById("vehicle");
-        vehicleSelect.innerHTML = `<option value=" ${suggestedVehicle.label}">${suggestedVehicle.label}</option>`;
+        vehicleSelect.innerHTML = `<option value="${suggestedVehicle.label}">${suggestedVehicle.label}</option>`;
+
+        document.getElementById("suggestedVehicleHidden").value = suggestedVehicle.label;
+
 
         var vehicleRent = suggestedVehicle.rentPerDay * days;
         document.getElementById("vehicle-rent").textContent = `Vehicle Rent per Day: ${suggestedVehicle.rentPerDay}. Total Rent for ${days} day(s): ${vehicleRent}`;
         document.getElementById("vehicleRentHidden").value = vehicleRent;
+        updateItinerary();
     }
 
     function updateItinerary() {

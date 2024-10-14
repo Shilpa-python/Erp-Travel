@@ -128,10 +128,10 @@ public class IndexModel : PageModel
             case "Superior":
                 PricePerRoom = 1500m;
                 break;
-            case "Del":
+            case "Deluxe":
                 PricePerRoom = 2000m;
                 break;
-            case "Del prem":
+            case "Deluxe prem":
                 PricePerRoom = 2500m;
                 break;
             case "Fam suite":
