@@ -56,7 +56,15 @@ public class IndexModel : PageModel
     public decimal RentPerDay { get; set; }
     public decimal TotalRent { get; set; }
 
-    public List<string> Itinerary { get; set; } = new List<string>();
+    [BindProperty]
+    public string? ItineraryType { get; set; }
+
+    [BindProperty]
+    public string? Itinerary { get; set; }
+
+    [BindProperty]
+    public string? GeneratedItinerary { get; set; }
+     public List<string> ItineraryList { get; set; } = new List<string>();
 
     private void CalculateVehicleAndRent(int totalPeople)
     {
@@ -86,7 +94,7 @@ public class IndexModel : PageModel
 
     private void InitializeSingaporeItinerary(int days)
     {
-        Itinerary = new List<string>();
+        ItineraryList = new List<string>();
 
         for (int i = 1; i <= days; i++)
         {
@@ -114,10 +122,37 @@ public class IndexModel : PageModel
                     break;
             }
 
-            Itinerary.Add(activity);
+            ItineraryList.Add(activity);
         }
     }
 
+    private string GenerateAutoItinerary(int days)
+    {
+        string[] itineraryTemplate = new string[]
+        {
+                "Day 1: Arrival and transfer to the hotel.",
+                "Day 2: City tour - Visit landmarks and cultural sites.",
+                "Day 3: Explore local markets and shopping districts.",
+                "Day 4: Relaxation day at the beach or local park.",
+                "Day 5: Adventure day - Outdoor activities.",
+                "Day 6: Final day - Departure."
+        };
+
+        string generatedItinerary = "";
+        for (int i = 0; i < days; i++)
+        {
+            if (i < itineraryTemplate.Length)
+            {
+                generatedItinerary += itineraryTemplate[i] + "\n";
+            }
+            else
+            {
+                generatedItinerary += $"Day {i + 1}: Custom itinerary for this day.\n";
+            }
+        }
+
+        return generatedItinerary;
+    }
 
     public void OnPostCalculate()
     {
@@ -165,7 +200,10 @@ public class IndexModel : PageModel
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
         OnPostCalculate();  // Calculate the total amount for rooms and other expenses
-
+        if (ItineraryType == "auto")
+        {
+            GeneratedItinerary = GenerateAutoItinerary(Days);
+        }
         // Save the data in TempData to pass to the Quotation page
         TempData["RoomType"] = RoomType;
         TempData["Rooms"] = Rooms;

@@ -63,6 +63,25 @@
     <p id="vehicle-rent"></p>
     <input type="hidden" id="vehicleRentHidden" name="TotalVehicleRent" /><!-- Display vehicle rent per day -->
 
+    <h4>Select Itinerary</h4>
+            <label for="itineraryType">Itinerary Selection Method:</label>
+            <select id="itineraryType" name="ItineraryType" onchange="toggleItineraryMode();">
+                <option value="auto">Auto-generate Itinerary Based on Days</option>
+                <option value="manual">Select from Predefined Itinerary</option>
+            </select>
+
+            <div id="predefinedItinerarySection" style="display: none;">
+                <label for="itinerarySelect">Choose a Predefined Itinerary:</label>
+                <select id="itinerarySelect" name="Itinerary" onchange="updateItineraryDisplay();">
+                    <option value="">Select Itinerary</option>
+                    <option value="Itinerary1">Itinerary 1: City Tour & Cultural</option>
+                    <option value="Itinerary2">Itinerary 2: Adventure & Nature</option>
+                    <option value="Itinerary3">Beach & Relaxation</option>
+                </select>
+            </div>
+
+            <div id="itineraryDisplay"></div>
+
     <input type="submit" value="Submit" />
 
     
@@ -70,12 +89,9 @@
 </div>
 
 
-    <div class="itinerary-container">
-        <h4>Itinerary</h4>
-        <div class="itinerary" id="itinerary">
-            <!-- This will be populated by JavaScript -->
-        </div>
-    </div>
+    
+       
+    
 
 </div>
 
@@ -91,15 +107,7 @@
         padding-right: 20px; /* Space between form and itinerary */
     }
 
-    .itinerary-container {
-        flex: 0 0 30%; /* Fixed width for itinerary container */
-        border-left: 1px solid #ccc; /* Optional styling for separation */
-        padding-left: 20px; /* Space inside itinerary container */
-    }
-
-    .itinerary p {
-        margin: 10px 0; /* Spacing between itinerary items */
-    }
+    
 </style>
 
 
@@ -165,30 +173,65 @@
         updateItinerary();
     }
 
-    function updateItinerary() {
-        var days = parseInt(document.getElementById("days").value) || 0;
-        var itineraryDiv = document.getElementById("itinerary");
-        itineraryDiv.innerHTML = ""; // Clear previous itinerary
-
-        // Define your itinerary template
-        var itineraryTemplate = [
-            "Day 1: Arrival in Singapore - Transfer to hotel and leisure time.",
-            "Day 2: Singapore City Tour - Visit Marina Bay Sands, Merlion Park, Chinatown.",
-            "Day 3: Sentosa Island Tour - Explore Universal Studios, S.E.A. Aquarium, and more.",
-            "Day 4: Free Day for Shopping and Local Exploration.",
-            "Day 5: Visit Chinatown,Chinatown Heritage Centre and Fort Canning Park."
-        ];
-
-        // Generate itinerary based on selected days
-        for (var i = 0; i < days; i++) {
-            if (i < itineraryTemplate.length) {
-                itineraryDiv.innerHTML += "<p>" + itineraryTemplate[i] + "</p>";
-            }
+    function toggleItineraryMode() {
+        var itineraryType = document.getElementById("itineraryType").value;
+        var predefinedItinerarySection = document.getElementById("predefinedItinerarySection");
+        if (itineraryType === "manual") {
+            predefinedItinerarySection.style.display = "block";
+            document.getElementById("itineraryDisplay").innerHTML = "";
+        } else {
+            predefinedItinerarySection.style.display = "none";
+            generateItinerary();
         }
     }
-    document.getElementById("days").addEventListener("input", function () {
-        updateItinerary(); // Update itinerary when days are changed
-    }); 
+
+    function generateItinerary() {
+        var days = parseInt(document.getElementById("days").value) || 0;
+        var itineraryDisplay = document.getElementById("itineraryDisplay");
+        if (document.getElementById("itineraryType").value === "manual") return;
+
+        itineraryDisplay.innerHTML = "";
+        var itineraryTemplate = [
+            "Day 1: Arrival and transfer to the hotel.",
+            "Day 2: City tour - Visit landmarks and cultural sites.",
+            "Day 3: Explore local markets and shopping districts.",
+            "Day 4: Relaxation day at the beach or local park.",
+            "Day 5: Adventure day - Outdoor activities.",
+            "Day 6: Final day - Departure."
+        ];
+
+        for (var i = 0; i < days; i++) {
+            var dayText = itineraryTemplate[i] || `Day ${i + 1}: Custom itinerary for this day.`;
+            itineraryDisplay.innerHTML += `<p>${dayText}</p>`;
+        }
+    }
+
+    function updateItinerary() {
+        generateItinerary();
+    }
+
+    function updateItineraryDisplay() {
+        var itinerarySelect = document.getElementById("itinerarySelect").value;
+        var itineraryDisplay = document.getElementById("itineraryDisplay");
+        itineraryDisplay.innerHTML = "";
+        if (itinerarySelect === "Itinerary1") {
+            itineraryDisplay.innerHTML = `
+                    <p>Day 1: Arrival and City Tour.</p>
+                    <p>Day 2: Cultural visits and Museums.</p>
+                    <p>Day 3: Departure.</p>`;
+        } else if (itinerarySelect === "Itinerary2") {
+            itineraryDisplay.innerHTML = `
+                    <p>Day 1: Adventure Trek.</p>
+                    <p>Day 2: Nature walk and Safari.</p>
+                    <p>Day 3: Departure.</p>`;
+        } else if (itinerarySelect === "Itinerary3") {
+            itineraryDisplay.innerHTML = `
+                    <p>Day 1: Relax on the Beach.</p>
+                    <p>Day 2: Explore the Coastal town.</p>
+                    <p>Day 3: Departure.</p>`;
+        }
+    }
+
 
     // Initial calculation on page load
     window.onload = function () {

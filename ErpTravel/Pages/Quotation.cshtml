@@ -2,6 +2,19 @@
 @model QuotationModel
 @{
     ViewData["Title"] = "Booking Quotation";
+
+    // Retrieve data from TempData
+    var roomType = TempData["RoomType"] as string;
+    var rooms = TempData["Rooms"] as int?;
+    var nights = TempData["Nights"] as int?;
+    var extraBeds = TempData["ExtraBeds"] as int?;
+    var childrenWithBed = TempData["ChildrenWithBed"] as int?;
+    var childrenWithoutBed = TempData["ChildrenWithoutBed"] as int?;
+    var totalAmount = TempData["TotalAmount"] as decimal?;
+    var suggestedVehicle = TempData["SuggestedVehicle"] as string;
+    var rentPerDay = TempData["RentPerDay"] as decimal?;
+    var totalRent = TempData["TotalRent"] as decimal?;
+    var itinerary = TempData["Itinerary"] as List<string>;
 }
 
 <h1>Booking Quotation</h1>
@@ -34,6 +47,7 @@
     <p><strong>Total Vehicle Rent:</strong> INR @Model.TotalRent.ToString("0.00")</p>
 
 
+
     <h4>Itinerary</h4>
     @if (Model.Itinerary != null && Model.Itinerary.Any())
     {
@@ -51,6 +65,11 @@
 
     <h4>Total Quotation:</h4>
     <p><strong>Total Amount (Rooms + Vehicle):</strong> INR @Model.GrandTotal</p>
+    <div>
+        <form method="post">
+            <button type="submit" asp-page="/BookingConfirm">Confirm Booking</button>
+        </form>
+    </div>
 </div>
 
 <style>
