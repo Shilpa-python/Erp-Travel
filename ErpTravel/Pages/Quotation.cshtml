@@ -58,10 +58,40 @@
             }
         </ul>
     }
+    else if (!string.IsNullOrEmpty(Model.SelectedItinerary))
+    {
+        <p>Selected Itinerary: @Model.SelectedItinerary</p>
+        <ul>
+            @if (Model.SelectedItinerary == "Itinerary1")
+            {
+                <li>Day 1: Arrival and City Tour.</li>
+                <li>Day 2: Cultural visits and Museums.</li>
+                <li>Day 3: Departure.</li>
+            }
+            else if (Model.SelectedItinerary == "Itinerary2")
+            {
+                <li>Day 1: Adventure Trek.</li>
+                <li>Day 2: Nature walk and Safari.</li>
+                <li>Day 3: Departure.</li>
+            }
+            else if (Model.SelectedItinerary == "Itinerary3")
+            {
+                <li>Day 1: Relax on the Beach.</li>
+                <li>Day 2: Explore the Coastal town.</li>
+                <li>Day 3: Departure.</li>
+            }
+        </ul>
+    }
     else
     {
         <p>No itinerary available.</p>
     }
+
+    <h4>Cost Breakdown Per Head:</h4>
+    <p><strong>Cost per Adult:</strong> INR @Model.PerHeadAdultCost.ToString("0.00")</p>
+    <p><strong>Cost per Child with Bed:</strong> INR @Model.PerHeadChildWithBedCost.ToString("0.00")</p>
+    <p><strong>Cost per Child without Bed:</strong> INR @Model.PerHeadChildWithoutBedCost.ToString("0.00")</p>
+    <p><strong>Cost per Extra Bed:</strong> INR @Model.PerHeadExtraBedCost.ToString("0.00")</p>
 
     <h4>Total Quotation:</h4>
     <p><strong>Total Amount (Rooms + Vehicle):</strong> INR @Model.GrandTotal</p>

@@ -45,17 +45,67 @@ public class QuotationModel : PageModel
 
     public List<string> Itinerary { get; set; }
     public decimal GrandTotal { get; set; }
+    public string? SelectedItinerary { get; set; }
 
-
+    public decimal PerHeadAdultCost { get; set; }
+    public decimal PerHeadChildWithBedCost { get; set; }
+    public decimal PerHeadChildWithoutBedCost { get; set; }
+    public decimal PerHeadExtraBedCost { get; set; }
     public QuotationModel()
     {
         Itinerary = new List<string>();
     }
 
-    public void OnPost()
+    public void OnGet()
+    {
+        // Retrieve the selected itinerary from TempData
+        SelectedItinerary = TempData["SelectedItinerary"] as string;
+
+        // If there is a selected itinerary, generate it
+        if (!string.IsNullOrEmpty(SelectedItinerary))
+        {
+            if (SelectedItinerary == "Itinerary1")
+            {
+                Itinerary.Add("Day 1: Arrival and City Tour.");
+                Itinerary.Add("Day 2: Cultural visits and Museums.");
+                Itinerary.Add("Day 3: Departure.");
+            }
+            else if (SelectedItinerary == "Itinerary2")
+            {
+                Itinerary.Add("Day 1: Adventure Trek.");
+                Itinerary.Add("Day 2: Nature walk and Safari.");
+                Itinerary.Add("Day 3: Departure.");
+            }
+            else if (SelectedItinerary == "Itinerary3")
+            {
+                Itinerary.Add("Day 1: Relax on the Beach.");
+                Itinerary.Add("Day 2: Explore the Coastal town.");
+                Itinerary.Add("Day 3: Departure.");
+            }
+        }
+    }
+    public void OnPost(string selectedItinerary)
     {
         // Auto-generate itinerary based on the number of days
         GenerateItinerary(Days);
+        if (selectedItinerary == "Itinerary1")
+        {
+            Itinerary.Add("Day 1: Arrival and City Tour.");
+            Itinerary.Add("Day 2: Cultural visits and Museums.");
+            Itinerary.Add("Day 3: Departure.");
+        }
+        else if (selectedItinerary == "Itinerary2")
+        {
+            Itinerary.Add("Day 1: Adventure Trek.");
+            Itinerary.Add("Day 2: Nature walk and Safari.");
+            Itinerary.Add("Day 3: Departure.");
+        }
+        else if (selectedItinerary == "Itinerary3")
+        {
+            Itinerary.Add("Day 1: Relax on the Beach.");
+            Itinerary.Add("Day 2: Explore the Coastal town.");
+            Itinerary.Add("Day 3: Departure.");
+        }
 
         if (string.IsNullOrEmpty(RoomType) || RoomType == "Select")
         {
@@ -78,6 +128,45 @@ public class QuotationModel : PageModel
 
         // Calculate the Grand Total
         GrandTotal = TotalRoomAmount + TotalRent;
+
+       
+       
+
+        // Calculate the total room cost (with children and extra beds)
+        decimal totalAdultRoomCost = Rooms * roomPricePerNight * Nights;
+        decimal totalChildWithBedCost = ChildrenWithBed * pricePerChildWithBed;
+        decimal totalExtraBedCost = ExtraBeds * pricePerExtraBed;
+        TotalRoomAmount = totalAdultRoomCost + totalChildWithBedCost + totalExtraBedCost;
+
+        // Calculate the Grand Total
+        GrandTotal = TotalRoomAmount + TotalRent;
+
+        // Per-head cost breakdown
+        if (Adults > 0)
+        {
+            // Adult room cost per head
+            PerHeadAdultCost = totalAdultRoomCost / Adults;
+        }
+
+        if (ChildrenWithBed > 0)
+        {
+            // Child with bed cost per head
+            PerHeadChildWithBedCost = totalChildWithBedCost / ChildrenWithBed;
+        }
+
+        if (ChildrenWithoutBed > 0)
+        {
+            // For children without beds, assume they don't add to room cost, so their per-head cost is zero.
+            PerHeadChildWithoutBedCost = 0; // Or any fixed cost if applicable
+        }
+
+        if (ExtraBeds > 0)
+        {
+            // Extra bed cost per head
+            PerHeadExtraBedCost = totalExtraBedCost / ExtraBeds;
+        }
+
+
     }
 
     // Auto-generate itinerary based on the number of days
