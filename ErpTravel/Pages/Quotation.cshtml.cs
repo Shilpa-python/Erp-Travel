@@ -18,6 +18,7 @@ public class QuotationModel : PageModel
 
     [BindProperty]
     public int Rooms { get; set; }
+    
     [BindProperty]
     public int ChildrenWithBed { get; set; }
 
@@ -31,28 +32,30 @@ public class QuotationModel : PageModel
     public string? RoomType { get; set; }
 
     [BindProperty]
-    public decimal TotalRoomAmount { get; set; } // Assuming you calculate and pass the total amount
+    public decimal TotalRoomAmount { get; set; }
 
     [BindProperty]
     public string? SuggestedVehicle { get; set; }
+    
     [BindProperty]
     public decimal RentPerDay { get; set; }
+    
     [BindProperty]
     public decimal TotalRent { get; set; }
-    public List<string> Itinerary { get; set;  }
+
+    public List<string> Itinerary { get; set; }
     public decimal GrandTotal { get; set; }
+
 
     public QuotationModel()
     {
         Itinerary = new List<string>();
     }
+
     public void OnPost()
     {
-        Itinerary.Add("Day 1: Arrival in Singapore - Transfer to hotel and leisure time");
-        Itinerary.Add("Day 2:Singapore City Tour - Visit Marina Bay Sands, Merlion Park, Chinatown.");
-        Itinerary.Add("Day 3:Sentosa Island Tour - Explore Universal Studios, S.E.A. Aquarium, and more");
-        Itinerary.Add("Day 4: Free Day for Shopping and Local Exploration.");
-        Itinerary.Add("Day 5: Visit Chinatown,Chinatown Heritage Centre and Fort Canning Park.");
+        // Auto-generate itinerary based on the number of days
+        GenerateItinerary(Days);
 
         if (string.IsNullOrEmpty(RoomType) || RoomType == "Select")
         {
@@ -67,17 +70,44 @@ public class QuotationModel : PageModel
 
         // Calculate the total room cost (with children and extra beds)
         TotalRoomAmount = (Rooms * roomPricePerNight * Nights) +
-                          (ChildrenWithBed * pricePerChildWithBed * Nights) +
-                          (ExtraBeds * pricePerExtraBed * Nights);
+                          (ChildrenWithBed * pricePerChildWithBed) +
+                          (ExtraBeds * pricePerExtraBed);
 
-        // Vehicle rent is already passed in the form and set directly
-        // TotalVehicleRent comes from the hidden form field in the front-end
-        // Transportation logic
+        // Calculate transportation
         CalculateTransportation();
 
         // Calculate the Grand Total
         GrandTotal = TotalRoomAmount + TotalRent;
-        // Now, the TotalAmount is automatically calculated using the TotalAmount property (TotalRoomAmount + TotalVehicleRent)
+    }
+
+    // Auto-generate itinerary based on the number of days
+    private void GenerateItinerary(int days)
+    {
+        Itinerary.Clear(); // Clear any existing itinerary
+
+        var activities = new List<string>
+    {
+        "Arrival and transfer to the hotel.",
+        "City tour - Visit landmarks and cultural sites.",
+        "Explore local markets and shopping districts.",
+        "Relaxation day at the beach or local park.",
+        "Adventure day - Outdoor activities.",
+        "Final day - Departure."
+    };
+
+        // Loop through the days and add the respective activity to the itinerary
+        for (int day = 1; day <= days; day++)
+        {
+            // Check if the day exceeds the number of predefined activities
+            if (day <= activities.Count)
+            {
+                Itinerary.Add($"Day {day}: {activities[day - 1]}");
+            }
+            else
+            {
+                Itinerary.Add($"Day {day}: Explore more activities.");
+            }
+        }
     }
 
     // Helper method to determine the price per room based on the selected room type
@@ -86,7 +116,7 @@ public class QuotationModel : PageModel
         switch (roomType)
         {
             case "Superior":
-                return 1500; // I+  `NR 1500 for Superior Room
+                return 1500; // INR 1500 for Superior Room
             case "Deluxe":
                 return 2000; // INR 2000 for Deluxe Room
             case "Deluxe prem":
@@ -97,6 +127,7 @@ public class QuotationModel : PageModel
                 return 0; // Default case for invalid room type
         }
     }
+
     private void CalculateTransportation()
     {
         int totalPeople = Adults + Children;
@@ -107,7 +138,12 @@ public class QuotationModel : PageModel
             SuggestedVehicle = "Car";
             RentPerDay = 500; // Rent per day for Car
         }
-        else if (totalPeople <= 7)
+        else if (totalPeople <= 5)
+        {
+            SuggestedVehicle = "SUV";
+            RentPerDay = 800; // Rent per day for Mini Van
+        }
+        else if (totalPeople <= 6)
         {
             SuggestedVehicle = "Mini Van";
             RentPerDay = 1000; // Rent per day for Mini Van
