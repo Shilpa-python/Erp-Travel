@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
+using System.Reflection;
 
 public class IndexModel : PageModel
 {
@@ -65,6 +66,8 @@ public class IndexModel : PageModel
     [BindProperty]
     public string? GeneratedItinerary { get; set; }
      public List<string> ItineraryList { get; set; } = new List<string>();
+   
+    
 
     private void CalculateVehicleAndRent(int totalPeople)
     {
@@ -216,11 +219,10 @@ public class IndexModel : PageModel
         TempData["RentPerDay"] = RentPerDay;
         TempData["TotalRent"] = TotalRent;
 
-        // Convert Itinerary list to TempData format
-        TempData["Itinerary"] = Itinerary;
+        
 
-        // Redirect to the Quotation page
-        return RedirectToPage("/Quotation");
+        // Redirect to the Quotation page after form submission
+        return RedirectToPage("Quotation");
     }
 }
 

@@ -79,6 +79,7 @@
                     <option value="Itinerary3">Beach & Relaxation</option>
                 </select>
             </div>
+            
 
             <div id="itineraryDisplay"></div>
 
@@ -213,24 +214,53 @@
     function updateItineraryDisplay() {
         var itinerarySelect = document.getElementById("itinerarySelect").value;
         var itineraryDisplay = document.getElementById("itineraryDisplay");
+        
         itineraryDisplay.innerHTML = "";
+        
+       
+
         if (itinerarySelect === "Itinerary1") {
-            itineraryDisplay.innerHTML = `
-                    <p>Day 1: Arrival and City Tour.</p>
-                    <p>Day 2: Cultural visits and Museums.</p>
-                    <p>Day 3: Departure.</p>`;
+            // Create Itinerary 1
+            for (var i = 0; i < days; i++) {
+                if (i === 0) {
+                    itineraryDisplay.innerHTML += `<p>Day 1: Arrival and City Tour.</p>`;
+                } else if (i === 1) {
+                    itineraryDisplay.innerHTML += `<p>Day 2: Cultural visits and Museums.</p>`;
+                } else if (i === 2) {
+                    itineraryDisplay.innerHTML += `<p>Day 3: Departure.</p>`;
+                } else {
+                    itineraryDisplay.innerHTML += `<p>Day ${i + 1}: Free day for personal exploration.</p>`;
+                }
+            }
         } else if (itinerarySelect === "Itinerary2") {
-            itineraryDisplay.innerHTML = `
-                    <p>Day 1: Adventure Trek.</p>
-                    <p>Day 2: Nature walk and Safari.</p>
-                    <p>Day 3: Departure.</p>`;
+            // Create Itinerary 2
+            for (var i = 0; i < days; i++) {
+                if (i === 0) {
+                    itineraryDisplay.innerHTML += `<p>Day 1: Adventure Trek.</p>`;
+                } else if (i === 1) {
+                    itineraryDisplay.innerHTML += `<p>Day 2: Nature walk and Safari.</p>`;
+                } else if (i === 2) {
+                    itineraryDisplay.innerHTML += `<p>Day 3: Departure.</p>`;
+                } else {
+                    itineraryDisplay.innerHTML += `<p>Day ${i + 1}: Optional adventure activities.</p>`;
+                }
+            }
         } else if (itinerarySelect === "Itinerary3") {
-            itineraryDisplay.innerHTML = `
-                    <p>Day 1: Relax on the Beach.</p>
-                    <p>Day 2: Explore the Coastal town.</p>
-                    <p>Day 3: Departure.</p>`;
+            // Create Itinerary 3
+            for (var i = 0; i < days; i++) {
+                if (i === 0) {
+                    itineraryDisplay.innerHTML += `<p>Day 1: Relax on the Beach.</p>`;
+                } else if (i === 1) {
+                    itineraryDisplay.innerHTML += `<p>Day 2: Explore the Coastal town.</p>`;
+                } else if (i === 2) {
+                    itineraryDisplay.innerHTML += `<p>Day 3: Departure.</p>`;
+                } else {
+                    itineraryDisplay.innerHTML += `<p>Day ${i + 1}: Leisure activities by the beach.</p>`;
+                }
+            }
         }
     }
+
 
 
     // Initial calculation on page load
