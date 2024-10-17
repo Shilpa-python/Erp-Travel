@@ -11,10 +11,10 @@ public class QuotationModel : PageModel
     public int Children { get; set; }
 
     [BindProperty]
-    public int Days { get; set; }
+    public int Nights { get; set; }
 
     [BindProperty]
-    public int Nights { get; set; }
+    public int Days { get; set; } // This will hold the value for Days (Nights + 1)
 
     [BindProperty]
     public int Rooms { get; set; }
@@ -86,8 +86,12 @@ public class QuotationModel : PageModel
     }
     public void OnPost(string selectedItinerary)
     {
-        // Auto-generate itinerary based on the number of days
-        GenerateItinerary(Days);
+        // Ensure Days are correctly calculated from Nights
+        Days = Nights + 1;
+
+        // Call itinerary generation and vehicle rent calculations
+        GenerateItinerary(Days);  // Use Days instead of Nights
+        CalculateTransportation(Days); // Use Days instead of Nights
         if (selectedItinerary == "Itinerary1")
         {
             Itinerary.Add("Day 1: Arrival and City Tour.");
@@ -123,8 +127,7 @@ public class QuotationModel : PageModel
                           (ChildrenWithBed * pricePerChildWithBed) +
                           (ExtraBeds * pricePerExtraBed);
 
-        // Calculate transportation
-        CalculateTransportation();
+        
 
         // Calculate the Grand Total
         GrandTotal = TotalRoomAmount + TotalRent;
@@ -217,7 +220,7 @@ public class QuotationModel : PageModel
         }
     }
 
-    private void CalculateTransportation()
+    private void CalculateTransportation(int days)
     {
         int totalPeople = Adults + Children;
 

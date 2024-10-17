@@ -20,16 +20,28 @@ public class IndexModel : PageModel
 
         return Page();
     }
+
+    [BindProperty]
+    public string? AgencyName { get; set; }
+
+    [BindProperty]
+    public string? AgencyLocation { get; set; }
+
+    [BindProperty]
+    public string? AgencyNumber { get; set; }
     public int Adults { get; set; }
 
     [BindProperty]
     public int Children { get; set; }
 
     [BindProperty]
+    public int Nights { get; set; }
+
+    [BindProperty]
     public int Days { get; set; }
 
     [BindProperty]
-    public int Nights { get; set; }
+    public DateTime ArrivalDate { get; set; }
 
     [BindProperty]
     public int Rooms { get; set; }

@@ -4,22 +4,54 @@
     ViewData["Title"] = "Travel Agency ERP";
 }
 
-<h1>Travel Agency Booking Form</h1>
+<h1>Company Name</h1>
 <div class="container">
     <div class="form-container">
         <form method="post" asp-page="/Quotation" id="bookingForm">
-    
+
+            <div>
+                <!-- Non-changeable label for Destination Management Company -->
+                <h3>Destination Management Company</h3>
+            </div>
+
+            <div>
+                <!-- Label and input for Agency Name -->
+                <label for="AgencyName">Agency Name:</label>
+                <input type="text" id="AgencyName" name="AgencyName" />
+            </div>
+
+            <div>
+                <!-- Label and input for Agency Location -->
+                <label for="AgencyLocation">Location:</label>
+                <input type="text" id="AgencyLocation" name="AgencyLocation" />
+            </div>
+            <div>
+                <!-- Label and input for Agency Number -->
+                <label for="AgencyNumber">Contact Number:</label>
+                <input type="tel" id="AgencyNumber" name="AgencyNumber" />
+            </div>
+      
          <label for="adults">Number of Adults</label>
             <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion(); updateItinerary();" />
 
          <label for="children">Number of Children</label>
             <input type="number" id="children" name="Children" min="0" required oninput="updateVehicleSuggestion(); updateItinerary();" />
 
-         <label for="days">Number of Days</label>
-            <input type="number" id="days" name="Days" min="1" required oninput="updateVehicleSuggestion(); updateItinerary();" />
+            <div>
+                <!-- Label and input for Nights (Days calculated automatically based on Nights) -->
+                <label for="Nights">Number of Nights:</label>
+                <input type="number" id="Nights" name="Nights" value="1" min="1" oninput="calculateDays()" />
 
-         <label for="nights">Number of Nights</label>
-         <input type="number" id="nights" name="Nights" min="1" required oninput="calculateTotal()" />
+
+                <!-- Hidden field to store days -->
+                <input type="hidden" id="Days" name="Days" required oninput="updateVehicleSuggestion(); updateItinerary();" />
+            </div>
+
+            <div>
+                <!-- Label for Arrival Date -->
+                <label for="ArrivalDate">Arrival Date:</label>
+                <input type="date" id="ArrivalDate" name="ArrivalDate" />
+            </div>
 
  
     <h4>Hotel Room Booking</h4>
@@ -113,18 +145,25 @@
 
 
 <script>
+    function calculateDays() {
+        var nights = parseInt(document.getElementById('Nights').value) || 0;
+        var days = parseInt(nights) + 1; // Add 1 to nights to get days
+        document.getElementById('Days').value = days; // Set hidden days value
+
+        // Call vehicle update after days are calculated
+        updateVehicleSuggestion();
+    }
     function calculateTotal() {
         // Get the values from the form
         var rooms = parseInt(document.getElementById("rooms").value) || 0;
 
-        var nights = parseInt(document.getElementById("nights").value) || 0;
+        var nights = parseInt(document.getElementById("Nights").value) || 0;
 
         var cwb = parseInt(document.getElementById("cwb").value) || 0;
         var pricePerBed = 150; // Assuming price for each bed; update as needed
         var totalCWB = cwb * pricePerBed; // Calculate total for children with bed
 
         var extraBeds = parseInt(document.getElementById("extraBeds").value) || 0;
-        var pricePerBed = 150;
         var totalExtraBeds = extraBeds * pricePerBed;
         // Calculate the total cost
 
@@ -139,9 +178,10 @@
     }
 
     function updateVehicleSuggestion() {
+        var days = parseInt(document.getElementById("Days").value) || 0;
         var adults = parseInt(document.getElementById("adults").value) || 0;
         var children = parseInt(document.getElementById("children").value) || 0;
-        var days = parseInt(document.getElementById("days").value) || 0;
+
         var totalPeople = adults + children;
 
         var vehicleOptions = {
@@ -167,11 +207,10 @@
 
         document.getElementById("suggestedVehicleHidden").value = suggestedVehicle.label;
 
-
+        // Calculate the total vehicle rent
         var vehicleRent = suggestedVehicle.rentPerDay * days;
         document.getElementById("vehicle-rent").textContent = `Vehicle Rent per Day: ${suggestedVehicle.rentPerDay}. Total Rent for ${days} day(s): ${vehicleRent}`;
         document.getElementById("vehicleRentHidden").value = vehicleRent;
-        updateItinerary();
     }
 
     function toggleItineraryMode() {
@@ -187,7 +226,7 @@
     }
 
     function generateItinerary() {
-        var days = parseInt(document.getElementById("days").value) || 0;
+        var days = parseInt(document.getElementById("Days").value) || 0;
         var itineraryDisplay = document.getElementById("itineraryDisplay");
         if (document.getElementById("itineraryType").value === "manual") return;
 
@@ -212,6 +251,7 @@
     }
 
     function updateItineraryDisplay() {
+        var days = parseInt(document.getElementById("Days").value) || 0;
         var itinerarySelect = document.getElementById("itinerarySelect").value;
         var itineraryDisplay = document.getElementById("itineraryDisplay");
         
@@ -265,6 +305,8 @@
 
     // Initial calculation on page load
     window.onload = function () {
+
+        calculateDays();
         calculateTotal();
         updateVehicleSuggestion();
         updateItinerary(); // Initialize the itinerary
