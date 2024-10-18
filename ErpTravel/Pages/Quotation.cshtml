@@ -3,8 +3,6 @@
 @{
     ViewData["Title"] = "Booking Quotation";
 
-    // Retrieve data from TempData
-    var roomType = TempData["RoomType"] as string;
     var rooms = TempData["Rooms"] as int?;
     var nights = TempData["Nights"] as int?;
     var extraBeds = TempData["ExtraBeds"] as int?;
@@ -22,31 +20,78 @@
 <div class="quotation-container">
 
     <h4>Travel Details</h4>
-
     <p><strong>Number of Adults:</strong> @Model.Adults</p>
     <p><strong>Number of Children:</strong> @Model.Children</p>
     <p><strong>Number of Days:</strong> @Model.Days</p>
     <p><strong>Number of Nights:</strong> @Model.Nights</p>
 
-    
-    
     <h4>Hotel Booking Details</h4>
-
-    
     <p><strong>Number of Rooms:</strong> @Model.Rooms</p>
     <p><strong>Number of Extra Beds:</strong> @Model.ExtraBeds</p>
     <p><strong>Number of Children with Bed:</strong> @Model.ChildrenWithBed</p>
     <p><strong>Number of Children without Bed:</strong> @Model.ChildrenWithoutBed</p>
-    <p><strong>Room Type:</strong> @Model.RoomType</p>
-    <p><strong>Total Amount (Rooms):</strong> INR @Model.TotalRoomAmount</p>
 
+    
+
+    @{
+        // Retrieving the room type from the form data
+        var roomType = Model.RoomType;
+        var hotels = new List<(string Name, decimal Price)>();
+
+        // Based on room type and star rating, define available hotels
+        if (roomType == "Superior-3star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel A", 1500m),
+    ("Hotel B", 1550m),
+    ("Hotel C", 1600m)
+    };
+        }
+        else if (roomType == "Superior-4star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel D", 2000m),
+    ("Hotel E", 2050m),
+    ("Hotel F", 2100m)
+    };
+        }
+        else if (roomType == "Superior-5star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel G", 2500m),
+    ("Hotel H", 2550m),
+    ("Hotel I", 2600m)
+    };
+        }
+        // Continue for other room types...
+    }
+
+    <h4>Available Hotels</h4>
+    <table class="hotel-table">
+        <thead>
+            <tr>
+                <th>Hotel Name</th>
+                <th>Price per Night (INR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < 3; i++)
+            {
+                <tr>
+                    <td>@hotels[i].Name</td>
+                    <td>@hotels[i].Price.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
     <h4>Transportation</h4>
-    <p><strong>Suggested Vehicle:</strong> @Model.SuggestedVehicle </p>
+    <p><strong>Suggested Vehicle:</strong> @Model.SuggestedVehicle</p>
     <p><strong>Vehicle Rent per Day:</strong> INR @Model.RentPerDay.ToString("0.00")</p>
     <p><strong>Total Vehicle Rent:</strong> INR @Model.TotalRent.ToString("0.00")</p>
-
-
 
     <h4>Itinerary</h4>
     @if (Model.Itinerary != null && Model.Itinerary.Any())
@@ -95,6 +140,7 @@
 
     <h4>Total Quotation:</h4>
     <p><strong>Total Amount (Rooms + Vehicle):</strong> INR @Model.GrandTotal</p>
+
     <div>
         <form method="post">
             <button type="submit" asp-page="/BookingConfirm">Confirm Booking</button>
@@ -112,4 +158,20 @@
     h4 {
         margin-top: 20px;
     }
+
+    .hotel-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .hotel-table th, .hotel-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .hotel-table th {
+            background-color: #f2f2f2;
+        }
 </style>
