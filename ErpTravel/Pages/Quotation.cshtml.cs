@@ -220,6 +220,7 @@ public class QuotationModel : PageModel
         }
     }
 
+
     private void CalculateTransportation(int days)
     {
         int totalPeople = Adults + Children;

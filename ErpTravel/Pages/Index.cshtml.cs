@@ -1,22 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
-using System.Reflection;
 
 public class IndexModel : PageModel
 {
-   
     public IActionResult OnGet()
     {
-        
         // Check if the user is logged in
         if (HttpContext.Session.GetString("IsLoggedIn") != "true")
         {
             // If not logged in, redirect to the login page
             return RedirectToPage("/Login");
         }
-        
-
 
         return Page();
     }
@@ -29,6 +24,7 @@ public class IndexModel : PageModel
 
     [BindProperty]
     public string? AgencyNumber { get; set; }
+
     public int Adults { get; set; }
 
     [BindProperty]
@@ -47,7 +43,7 @@ public class IndexModel : PageModel
     public int Rooms { get; set; }
 
     [BindProperty]
-    public string? RoomType { get; set; } 
+    public string? RoomType { get; set; }
 
     [BindProperty]
     public int ChildrenWithBed { get; set; }
@@ -61,7 +57,7 @@ public class IndexModel : PageModel
     [BindProperty]
     public decimal PricePerRoom { get; set; }
 
-    public decimal PricePerBed { get; set; }
+    public decimal PricePerBed { get; set; } = 500; // Example price for an extra bed
 
     public decimal TotalAmount { get; set; }
 
@@ -77,10 +73,10 @@ public class IndexModel : PageModel
 
     [BindProperty]
     public string? GeneratedItinerary { get; set; }
-     public List<string> ItineraryList { get; set; } = new List<string>();
-   
-    
 
+    public List<string> ItineraryList { get; set; } = new List<string>();
+
+    // Calculate vehicle and rent logic based on total people
     private void CalculateVehicleAndRent(int totalPeople)
     {
         if (totalPeople <= 4)
@@ -105,8 +101,9 @@ public class IndexModel : PageModel
         }
 
         TotalRent = RentPerDay * Days;
-     }
+    }
 
+    // Initialize a sample itinerary for Singapore based on days
     private void InitializeSingaporeItinerary(int days)
     {
         ItineraryList = new List<string>();
@@ -130,7 +127,7 @@ public class IndexModel : PageModel
                     activity += "Free Day for Shopping and Local Exploration.";
                     break;
                 case 5:
-                    activity += "Visit Chinatown,Chinatown Heritage Centre and Fort Canning Park.";
+                    activity += "Visit Chinatown, Chinatown Heritage Centre and Fort Canning Park.";
                     break;
                 default:
                     activity += "Free Day - Explore as you wish!";
@@ -141,16 +138,17 @@ public class IndexModel : PageModel
         }
     }
 
+    // Generate a sample auto itinerary based on days
     private string GenerateAutoItinerary(int days)
     {
         string[] itineraryTemplate = new string[]
         {
-                "Day 1: Arrival and transfer to the hotel.",
-                "Day 2: City tour - Visit landmarks and cultural sites.",
-                "Day 3: Explore local markets and shopping districts.",
-                "Day 4: Relaxation day at the beach or local park.",
-                "Day 5: Adventure day - Outdoor activities.",
-                "Day 6: Final day - Departure."
+            "Day 1: Arrival and transfer to the hotel.",
+            "Day 2: City tour - Visit landmarks and cultural sites.",
+            "Day 3: Explore local markets and shopping districts.",
+            "Day 4: Relaxation day at the beach or local park.",
+            "Day 5: Adventure day - Outdoor activities.",
+            "Day 6: Final day - Departure."
         };
 
         string generatedItinerary = "";
@@ -169,57 +167,80 @@ public class IndexModel : PageModel
         return generatedItinerary;
     }
 
+    // Handle form calculation based on selected room type and extras
     public void OnPostCalculate()
     {
-        // Calculate total amount based on rooms and selected room type
-        // You can define the price per room according to room types
+        // Define pricing logic based on the room type selected
         switch (RoomType)
         {
-            case "Superior":
+            case "Superior-3star":
                 PricePerRoom = 1500m;
                 break;
-            case "Deluxe":
+            case "Superior-4star":
                 PricePerRoom = 2000m;
                 break;
-            case "Deluxe prem":
+            case "Superior-5star":
                 PricePerRoom = 2500m;
                 break;
-            case "Fam suite":
+            case "Deluxe-3star":
+                PricePerRoom = 2000m;
+                break;
+            case "Deluxe-4star":
+                PricePerRoom = 2500m;
+                break;
+            case "Deluxe-5star":
                 PricePerRoom = 3000m;
                 break;
+            case "DeluxePremiere-3star":
+                PricePerRoom = 2500m;
+                break;
+            case "DeluxePremiere-4star":
+                PricePerRoom = 3000m;
+                break;
+            case "DeluxePremiere-5star":
+                PricePerRoom = 3500m;
+                break;
+            case "FamilySuite-3star":
+                PricePerRoom = 3000m;
+                break;
+            case "FamilySuite-4star":
+                PricePerRoom = 3500m;
+                break;
+            case "FamilySuite-5star":
+                PricePerRoom = 4000m;
+                break;
             default:
-                PricePerRoom = 1000m; // Default price
+                PricePerRoom = 1000m; // Default price for unhandled cases
                 break;
         }
 
-        // Calculate total amount based on the number of rooms
-        TotalAmount = (Rooms * PricePerRoom * Nights) + (ChildrenWithBed * PricePerBed) + (ExtraBeds * PricePerBed) ;
+        // Calculate the total amount based on the number of rooms, extra beds, etc.
+        TotalAmount = (Rooms * PricePerRoom * Nights) + (ChildrenWithBed * PricePerBed) + (ExtraBeds * PricePerBed);
     }
 
     public void OnPost()
     {
-
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
 
         InitializeSingaporeItinerary(Days);
 
-        TempData["Message"] = $"Booking successful! Total amount:  INR {TotalAmount}. Vehicle suggested: {SuggestedVehicle}, Vehicle Rent: INR {TotalRent}.";
-
-   
+        TempData["Message"] = $"Booking successful! Total amount: INR {TotalAmount}. Vehicle suggested: {SuggestedVehicle}, Vehicle Rent: INR {TotalRent}.";
     }
 
     public IActionResult OnPostSubmit()
     {
-        // Perform all necessary calculations here
+        // Perform all necessary calculations
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
-        OnPostCalculate();  // Calculate the total amount for rooms and other expenses
+        OnPostCalculate();  // Calculate total amount for rooms and other expenses
+
         if (ItineraryType == "auto")
         {
             GeneratedItinerary = GenerateAutoItinerary(Days);
         }
-        // Save the data in TempData to pass to the Quotation page
+
+        // Save the calculated data in TempData to pass to the Quotation page
         TempData["RoomType"] = RoomType;
         TempData["Rooms"] = Rooms;
         TempData["Nights"] = Nights;
@@ -231,10 +252,7 @@ public class IndexModel : PageModel
         TempData["RentPerDay"] = RentPerDay;
         TempData["TotalRent"] = TotalRent;
 
-        
-
         // Redirect to the Quotation page after form submission
         return RedirectToPage("Quotation");
     }
 }
-

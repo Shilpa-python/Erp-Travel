@@ -17,7 +17,7 @@
             <div>
                 <!-- Label and input for Agency Name -->
                 <label for="AgencyName">Agency Name:</label>
-                <input type="text" id="AgencyName" name="AgencyName" />
+                <input type="text" id="AgencyName" name="AgencyName" required />
             </div>
 
             <div>
@@ -28,7 +28,9 @@
             <div>
                 <!-- Label and input for Agency Number -->
                 <label for="AgencyNumber">Contact Number:</label>
-                <input type="tel" id="AgencyNumber" name="AgencyNumber" />
+                <input type="tel" id="AgencyNumber" name="AgencyNumber" pattern="[0-9]{10}" required />
+                <span class="error-message">Please enter a valid 10-digit contact number</span>
+
             </div>
       
          <label for="adults">Number of Adults</label>
@@ -50,7 +52,7 @@
             <div>
                 <!-- Label for Arrival Date -->
                 <label for="ArrivalDate">Arrival Date:</label>
-                <input type="date" id="ArrivalDate" name="ArrivalDate" />
+                <input type="date" id="ArrivalDate" name="ArrivalDate" required />
             </div>
 
  
@@ -68,14 +70,34 @@
     <label for="extraBeds">Number of Extra Beds</label>
     <input type="number" id="extraBeds" name="ExtraBeds" />
 
-    <label for="room">Room Type</label>
-    <select id="room" name="RoomType" onchange="calculateTotal()">
-        <option value="Select">Select</option>
-        <option value="Superior" data-price="1500">Superior room - INR 1500</option>
-        <option value="Deluxe" data-price="2000">Deluxe room - INR 2000</option>
-        <option value="Deluxe prem" data-price="2500">Deluxe Premiere room - INR 2500</option>
-        <option value="Fam suite" data-price="3000">Family suite - INR 3000</option>
-    </select>
+            <div>
+                <!-- Room Type with Star Rating -->
+                <label for="room">Room Type</label>
+                <select id="room" name="RoomType" onchange="calculateTotal()" required>
+                    <option value="Select">Select Room Type</option>
+                    <optgroup label="Superior">
+                        <option value="Superior-3star" data-price="1500">Superior room - 3 Star - INR 1500</option>
+                        <option value="Superior-4star" data-price="2000">Superior room - 4 Star - INR 2000</option>
+                        <option value="Superior-5star" data-price="2500">Superior room - 5 Star - INR 2500</option>
+                    </optgroup>
+                    <optgroup label="Deluxe">
+                        <option value="Deluxe-3star" data-price="2000">Deluxe room - 3 Star - INR 2000</option>
+                        <option value="Deluxe-4star" data-price="2500">Deluxe room - 4 Star - INR 2500</option>
+                        <option value="Deluxe-5star" data-price="3000">Deluxe room - 5 Star - INR 3000</option>
+                    </optgroup>
+                    <optgroup label="Deluxe Premiere">
+                        <option value="DeluxePremiere-3star" data-price="2500">Deluxe Premiere room - 3 Star - INR 2500</option>
+                        <option value="DeluxePremiere-4star" data-price="3000">Deluxe Premiere room - 4 Star - INR 3000</option>
+                        <option value="DeluxePremiere-5star" data-price="3500">Deluxe Premiere room - 5 Star - INR 3500</option>
+                    </optgroup>
+                    <optgroup label="Family Suite">
+                        <option value="FamilySuite-3star" data-price="3000">Family Suite - 3 Star - INR 3000</option>
+                        <option value="FamilySuite-4star" data-price="3500">Family Suite - 4 Star - INR 3500</option>
+                        <option value="FamilySuite-5star" data-price="4000">Family Suite - 5 Star - INR 4000</option>
+                    </optgroup>
+                </select>
+            </div>
+
 
     <label>Total Amount :</label>
     <span id="totalAmount">INR 0</span>
