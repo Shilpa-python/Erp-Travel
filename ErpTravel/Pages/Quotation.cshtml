@@ -66,9 +66,89 @@
     ("Hotel I", 2600m)
     };
         }
-        // Continue for other room types...
+       else if (roomType == "Deluxe-3star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel A", 1500m),
+    ("Hotel B", 1550m),
+    ("Hotel C", 1600m)
+    };
+        }
+        else if (roomType == "Deluxe-4star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel D", 2000m),
+    ("Hotel E", 2050m),
+    ("Hotel F", 2100m)
+    };
+        }
+        else if (roomType == "Deluxe-5star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel G", 2500m),
+    ("Hotel H", 2550m),
+    ("Hotel I", 2600m)
+    };
+        
     }
-
+        else if (roomType == "DeluxePremiere-3star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel A", 1500m),
+    ("Hotel B", 1550m),
+    ("Hotel C", 1600m)
+    };
+        }
+        else if (roomType == "DeluxePremiere-4star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel D", 2000m),
+    ("Hotel E", 2050m),
+    ("Hotel F", 2100m)
+    };
+        }
+        else if (roomType == "DeluxePremiere-5star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel G", 2500m),
+    ("Hotel H", 2550m),
+    ("Hotel I", 2600m)
+    };
+    }
+        else if (roomType == "FamilySuite-3star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel A", 1500m),
+    ("Hotel B", 1550m),
+    ("Hotel C", 1600m)
+    };
+        }
+        else if (roomType == "FamilySuite-4star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel D", 2000m),
+    ("Hotel E", 2050m),
+    ("Hotel F", 2100m)
+    };
+        }
+        else if (roomType == "FamilySuite-5star")
+        {
+            hotels = new List<(string, decimal)>
+    {
+    ("Hotel G", 2500m),
+    ("Hotel H", 2550m),
+    ("Hotel I", 2600m)
+    };
+        }
+        }
     <h4>Available Hotels</h4>
     <table class="hotel-table">
         <thead>
@@ -78,12 +158,12 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < 3; i++)
+            @for (int i = 0; i < hotels.Count; i++)
             {
-                <tr>
-                    <td>@hotels[i].Name</td>
-                    <td>@hotels[i].Price.ToString("0.00")</td>
-                </tr>
+            <tr>
+            <td>@hotels[i].Name</td>
+            <td>@hotels[i].Price.ToString("0.00")</td>
+            </tr>
             }
         </tbody>
     </table>
