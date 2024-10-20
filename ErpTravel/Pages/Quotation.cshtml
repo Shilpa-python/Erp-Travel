@@ -154,19 +154,16 @@
         <thead>
             <tr>
                 <th>Name of Hotel(Subject to Availability)</th>
-                <th>Price(INR)</th>
+                <th>Price/Adult</th>
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < hotels.Count; i++)
-            {
-            <tr>
-            <td>@hotels[i].Name</td>
-            <td>@hotels[i].Price.ToString("0.00")</td>
-            </tr>
-            }
+            
         </tbody>
     </table>
+    <h3>Total Quotation Amount: <span id="totalQuotationAmount"></span></h3>
+
+
 
     <h4>Transportation</h4>
     <p><strong>Suggested Vehicle:</strong> @Model.SuggestedVehicle</p>

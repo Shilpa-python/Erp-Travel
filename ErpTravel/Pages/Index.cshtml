@@ -34,7 +34,7 @@
             </div>
       
          <label for="adults">Number of Adults</label>
-            <input type="number" id="adults" name="Adults" required oninput="updateVehicleSuggestion(); updateItinerary();" />
+            <input type="number" id="adults" name="Adults" min="1" required oninput="updateVehicleSuggestion(); onchange= updateRoomOptions()">
 
          <label for="children">Number of Children</label>
             <input type="number" id="children" name="Children" min="0" required oninput="updateVehicleSuggestion(); updateItinerary();" />
@@ -42,9 +42,7 @@
             <div>
                 <!-- Label and input for Nights (Days calculated automatically based on Nights) -->
                 <label for="Nights">Number of Nights:</label>
-                <input type="number" id="Nights" name="Nights" value="1" min="1" oninput="calculateDays()" />
-
-
+                <input type="number" id="Nights" name="Nights" value="1" min="1" /><!-- oninput="calculateDays()"-->
                 <!-- Hidden field to store days -->
                 <input type="hidden" id="Days" name="Days" required oninput="updateVehicleSuggestion(); updateItinerary();" />
             </div>
@@ -59,9 +57,9 @@
     <h4>Hotel Room Booking</h4>
 
     <label for="rooms">Number of Rooms</label>
-    <input type="number" id="rooms" name="Rooms" min="1" max="100" required oninput="calculateTotal()" />
+            <input type="number" id="rooms" name="Rooms" min="1" max="100" required /> <!--oninput="calculateTotal()"-->
 
-    <label for="cwb">Number of Children with Bed</label>
+            <label for="cwb">Number of Children with Bed</label>
     <input type="number" id="cwb" name="ChildrenWithBed" />
 
     <label for="cwob">Number of Children without Bed</label>
@@ -73,35 +71,24 @@
             <div>
                 <!-- Room Type with Star Rating -->
                 <label for="room">Room Type</label>
-                <select id="room" name="RoomType" onchange="calculateTotal()" required>
+                <select id="room" name="RoomType" required>
+                    <!--onchange="calculateTotal()"-->
                     <option value="Select">Select Room Type</option>
-                    <optgroup label="Superior">
-                        <option value="Superior-3star" data-price="1500">Superior room - 3 Star - INR 1500</option>
-                        <option value="Superior-4star" data-price="2000">Superior room - 4 Star - INR 2000</option>
-                        <option value="Superior-5star" data-price="2500">Superior room - 5 Star - INR 2500</option>
-                    </optgroup>
-                    <optgroup label="Deluxe">
-                        <option value="Deluxe-3star" data-price="2000">Deluxe room - 3 Star - INR 2000</option>
-                        <option value="Deluxe-4star" data-price="2500">Deluxe room - 4 Star - INR 2500</option>
-                        <option value="Deluxe-5star" data-price="3000">Deluxe room - 5 Star - INR 3000</option>
-                    </optgroup>
-                    <optgroup label="Deluxe Premiere">
-                        <option value="DeluxePremiere-3star" data-price="2500">Deluxe Premiere room - 3 Star - INR 2500</option>
-                        <option value="DeluxePremiere-4star" data-price="3000">Deluxe Premiere room - 4 Star - INR 3000</option>
-                        <option value="DeluxePremiere-5star" data-price="3500">Deluxe Premiere room - 5 Star - INR 3500</option>
-                    </optgroup>
-                    <optgroup label="Family Suite">
-                        <option value="FamilySuite-3star" data-price="3000">Family Suite - 3 Star - INR 3000</option>
-                        <option value="FamilySuite-4star" data-price="3500">Family Suite - 4 Star - INR 3500</option>
-                        <option value="FamilySuite-5star" data-price="4000">Family Suite - 5 Star - INR 4000</option>
-                    </optgroup>
+                   
                 </select>
+
+                <!-- Add Room Type Preferences -->
+                <button type="button" onclick="addRoomPreference()">Add Another Room</button>
+
+                <!-- Container to show multiple room preferences -->
+                <div id="room-preferences"></div>
+                
             </div>
 
 
-    <label>Total Amount :</label>
+    <!--<label>Total Amount :</label>
     <span id="totalAmount">INR 0</span>
-    <input type="hidden" id="totalAmountHidden" name="TotalRoomAmount" />
+            <input type="hidden" id="totalAmountHidden" name="TotalRoomAmount" />-->
     <br><br>
 
     <h4>Transportation</h4>
@@ -175,7 +162,70 @@
         // Call vehicle update after days are calculated
         updateVehicleSuggestion();
     }
-    function calculateTotal() {
+
+    const roomOptions = {
+        'Superior': {
+            '3star': 1500,
+            '4star': 2000,
+            '5star': 2500
+        },
+        'Deluxe': {
+            '3star': 2000,
+            '4star': 2500,
+            '5star': 3000
+        },
+        'DeluxePremiere': {
+            '3star': 2500,
+            '4star': 3000,
+            '5star': 3500
+        },
+        'FamilySuite': {
+            '3star': 3000,
+            '4star': 3500,
+            '5star': 4000
+        }
+    };
+
+    function updateRoomOptions() {
+        const adults = parseInt(document.getElementById('adults').value);
+        const roomSelect = document.getElementById('room');
+        roomSelect.innerHTML = ''; // Clear current options
+
+        // Define room type availability based on the number of adults
+        let availableOptions = [];
+        if (adults >= 1 && adults <= 2) {
+            availableOptions = ['Superior', 'Deluxe'];
+        } else if (adults == 3) {
+            availableOptions = ['Deluxe', 'DeluxePremiere'];
+        } else if (adults >= 4 && adults <= 8) {
+            availableOptions = ['FamilySuite'];
+        }
+
+        // Populate the room dropdown with appropriate options
+        availableOptions.forEach(type => {
+            const optGroup = document.createElement('optgroup');
+            optGroup.label = type.replace(/([A-Z])/g, ' $1').trim(); // Add space to the room type label
+
+            for (const star in roomOptions[type]) {
+                const roomPrice = roomOptions[type][star] ; // Calculate total price for adults
+
+                const option = document.createElement('option');
+                option.value = `${type}-${star}`;
+                option.setAttribute('data-price', roomPrice); // Set the total price
+                option.textContent = `${star.replace('star', ' Star')} - ${optGroup.label} - INR ${roomPrice}`; // Display total cost with number of adults
+
+                optGroup.appendChild(option);
+            }
+            roomSelect.appendChild(optGroup);
+        });
+
+        if (adults > 8) {
+            alert('For more than 8 adults, please select multiple rooms.');
+        }
+    }
+
+
+       /* function calculateTotal() {
         // Get the values from the form
         var rooms = parseInt(document.getElementById("rooms").value) || 0;
 
@@ -197,8 +247,33 @@
         // Display the total amount
         document.getElementById("totalAmount").textContent = "INR " + totalAmount.toFixed(2);
         document.getElementById("totalAmountHidden").value = totalAmount;
-    }
+    }*/
+    
 
+    function addRoomPreference() {
+        const adults = parseInt(document.getElementById('adults').value);
+        const roomPreferencesContainer = document.getElementById('room-preferences');
+
+        // Add another room preference selector for additional rooms
+        const div = document.createElement('div');
+        div.className = 'room-preference';
+        const roomLabel = document.createElement('label');
+        roomLabel.textContent = `Room Preference for ${adults} Adults`;
+        div.appendChild(roomLabel);
+
+        const roomSelect = document.createElement('select');
+        roomSelect.name = 'RoomType';
+       /* roomSelect.onchange = calculateTotal;*/
+        roomSelect.required = true;
+
+        const availableOptions = document.getElementById('room').innerHTML;
+        roomSelect.innerHTML = availableOptions; // Use the existing options
+
+        div.appendChild(roomSelect);
+        roomPreferencesContainer.appendChild(div);
+    }
+    
+     
     function updateVehicleSuggestion() {
         var days = parseInt(document.getElementById("Days").value) || 0;
         var adults = parseInt(document.getElementById("adults").value) || 0;
@@ -329,9 +404,12 @@
     window.onload = function () {
 
         calculateDays();
-        calculateTotal();
+        updateRoomOptions();
+       // calculateTotal();
         updateVehicleSuggestion();
-        updateItinerary(); // Initialize the itinerary
+        toggleItineraryMode(); // Initialize the itinerary
+        updateItinerary();
+        updateItineraryDisplay();
     };
 
 </script>
