@@ -5,20 +5,19 @@ using System.Collections.Generic;
 public class QuotationModel : PageModel
 {
     [BindProperty]
+    public string? AgencyName { get; set; }
+
+    [BindProperty]
+    public string? AgencyLocation { get; set; }
+
+    [BindProperty]
     public int Adults { get; set; }
 
     [BindProperty]
     public int Children { get; set; }
 
     [BindProperty]
-    public int Nights { get; set; }
-
-    [BindProperty]
-    public int Days { get; set; } // This will hold the value for Days (Nights + 1)
-
-    [BindProperty]
     public int Rooms { get; set; }
-    
     [BindProperty]
     public int ChildrenWithBed { get; set; }
 
@@ -28,6 +27,16 @@ public class QuotationModel : PageModel
     [BindProperty]
     public int ExtraBeds { get; set; }
 
+
+    [BindProperty]
+    public int Nights { get; set; }
+
+    [BindProperty]
+    public int Days { get; set; }
+
+    
+
+   
     [BindProperty]
     public string? RoomType { get; set; }
 
@@ -36,21 +45,21 @@ public class QuotationModel : PageModel
 
     [BindProperty]
     public string? SuggestedVehicle { get; set; }
-    
+
     [BindProperty]
     public decimal RentPerDay { get; set; }
-    
+
     [BindProperty]
     public decimal TotalRent { get; set; }
 
-    public List<string> Itinerary { get; set; }
-    public decimal GrandTotal { get; set; }
-    public string? SelectedItinerary { get; set; }
+   
 
     public decimal PerHeadAdultCost { get; set; }
     public decimal PerHeadChildWithBedCost { get; set; }
     public decimal PerHeadChildWithoutBedCost { get; set; }
     public decimal PerHeadExtraBedCost { get; set; }
+    public List<string> Itinerary { get; set; }
+    public string? SelectedItinerary { get; set; }
     public QuotationModel()
     {
         Itinerary = new List<string>();
@@ -58,169 +67,118 @@ public class QuotationModel : PageModel
 
     public void OnGet()
     {
-        // Retrieve the selected itinerary from TempData
-        SelectedItinerary = TempData["SelectedItinerary"] as string;
+        // Retrieving values from TempData
+        AgencyName = TempData["AgencyName"] as string;
+        AgencyLocation = TempData["AgencyLocation"] as string;
+        RoomType = TempData["RoomType"] as string; // Check this value
+        Rooms = TempData["Rooms"] as int? ?? 0;
+        Nights = TempData["Nights"] as int? ?? 0;
+        ExtraBeds = TempData["ExtraBeds"] as int? ?? 0;
+        ChildrenWithBed = TempData["ChildrenWithBed"] as int? ?? 0;
+        ChildrenWithoutBed = TempData["ChildrenWithoutBed"] as int? ?? 0;
 
-        // If there is a selected itinerary, generate it
+        // Handling decimal conversions for safer operations
+        TotalRoomAmount = 0; // Set a default or computed value
+        SuggestedVehicle = TempData["SuggestedVehicle"] as string;
+        RentPerDay = TempData["RentPerDay"] as decimal? ?? 0;
+        TotalRent = TempData["TotalRent"] as decimal? ?? 0;
+
+        // Generating the itinerary if present in TempData
+        SelectedItinerary = TempData["Itinerary"] as string;
         if (!string.IsNullOrEmpty(SelectedItinerary))
         {
-            if (SelectedItinerary == "Itinerary1")
-            {
-                Itinerary.Add("Day 1: Arrival and City Tour.");
-                Itinerary.Add("Day 2: Cultural visits and Museums.");
-                Itinerary.Add("Day 3: Departure.");
-            }
-            else if (SelectedItinerary == "Itinerary2")
-            {
-                Itinerary.Add("Day 1: Adventure Trek.");
-                Itinerary.Add("Day 2: Nature walk and Safari.");
-                Itinerary.Add("Day 3: Departure.");
-            }
-            else if (SelectedItinerary == "Itinerary3")
-            {
-                Itinerary.Add("Day 1: Relax on the Beach.");
-                Itinerary.Add("Day 2: Explore the Coastal town.");
-                Itinerary.Add("Day 3: Departure.");
-            }
+            string[] itineraryItems = SelectedItinerary.Split('\n');
+            Itinerary.AddRange(itineraryItems);
         }
     }
-    public void OnPost(string selectedItinerary)
+
+    public void OnPost()
     {
         // Ensure Days are correctly calculated from Nights
         Days = Nights + 1;
 
-        // Call itinerary generation and vehicle rent calculations
-        GenerateItinerary(Days);  // Use Days instead of Nights
-        CalculateTransportation(Days); // Use Days instead of Nights
-        if (selectedItinerary == "Itinerary1")
-        {
-            Itinerary.Add("Day 1: Arrival and City Tour.");
-            Itinerary.Add("Day 2: Cultural visits and Museums.");
-            Itinerary.Add("Day 3: Departure.");
-        }
-        else if (selectedItinerary == "Itinerary2")
-        {
-            Itinerary.Add("Day 1: Adventure Trek.");
-            Itinerary.Add("Day 2: Nature walk and Safari.");
-            Itinerary.Add("Day 3: Departure.");
-        }
-        else if (selectedItinerary == "Itinerary3")
-        {
-            Itinerary.Add("Day 1: Relax on the Beach.");
-            Itinerary.Add("Day 2: Explore the Coastal town.");
-            Itinerary.Add("Day 3: Departure.");
-        }
+        // Calculate transportation based on the total number of people and days
+        CalculateTransportation(Days);
 
-        if (string.IsNullOrEmpty(RoomType) || RoomType == "Select")
+        // Validate RoomType
+        if (string.IsNullOrEmpty(RoomType))
         {
             ModelState.AddModelError("RoomType", "Please select a valid room type.");
             return;
         }
 
-        // Room rent logic
+        // Calculate room costs and total amounts
         decimal roomPricePerNight = GetRoomPrice(RoomType);
-        decimal pricePerChildWithBed = 150; // Assuming 150 INR per child with a bed
-        decimal pricePerExtraBed = 150; // Assuming 150 INR per extra bed
+        decimal pricePerChildWithBed = 150; // Assuming INR 150 per child with a bed
+        decimal pricePerExtraBed = 150; // Assuming INR 150 per extra bed
 
-        // Calculate the total room cost (with children and extra beds)
+        // Calculate room cost
         TotalRoomAmount = (Rooms * roomPricePerNight * Nights) +
                           (ChildrenWithBed * pricePerChildWithBed) +
                           (ExtraBeds * pricePerExtraBed);
 
-        
-
-        // Calculate the Grand Total
-        GrandTotal = TotalRoomAmount + TotalRent;
-
-       
-       
-
-        // Calculate the total room cost (with children and extra beds)
-        decimal totalAdultRoomCost = Rooms * roomPricePerNight * Nights;
-        decimal totalChildWithBedCost = ChildrenWithBed * pricePerChildWithBed;
-        decimal totalExtraBedCost = ExtraBeds * pricePerExtraBed;
-        TotalRoomAmount = totalAdultRoomCost + totalChildWithBedCost + totalExtraBedCost;
-
-        // Calculate the Grand Total
-        GrandTotal = TotalRoomAmount + TotalRent;
-
-        // Per-head cost breakdown
-        if (Adults > 0)
-        {
-            // Adult room cost per head
-            PerHeadAdultCost = totalAdultRoomCost / Adults;
-        }
-
-        if (ChildrenWithBed > 0)
-        {
-            // Child with bed cost per head
-            PerHeadChildWithBedCost = totalChildWithBedCost / ChildrenWithBed;
-        }
-
-        if (ChildrenWithoutBed > 0)
-        {
-            // For children without beds, assume they don't add to room cost, so their per-head cost is zero.
-            PerHeadChildWithoutBedCost = 0; // Or any fixed cost if applicable
-        }
-
-        if (ExtraBeds > 0)
-        {
-            // Extra bed cost per head
-            PerHeadExtraBedCost = totalExtraBedCost / ExtraBeds;
-        }
-
-
+        // Calculate per-head costs
+        CalculatePerHeadCosts(roomPricePerNight, pricePerChildWithBed, pricePerExtraBed);
     }
 
-    // Auto-generate itinerary based on the number of days
+    // Method to generate an itinerary based on days (if needed)
     private void GenerateItinerary(int days)
     {
-        Itinerary.Clear(); // Clear any existing itinerary
+        Itinerary.Clear();
 
         var activities = new List<string>
-    {
-        "Arrival and transfer to the hotel.",
-        "City tour - Visit landmarks and cultural sites.",
-        "Explore local markets and shopping districts.",
-        "Relaxation day at the beach or local park.",
-        "Adventure day - Outdoor activities.",
-        "Final day - Departure."
-    };
+        {
+            "Arrival and transfer to the hotel.",
+            "City tour - Visit landmarks and cultural sites.",
+            "Explore local markets and shopping districts.",
+            "Relaxation day at the beach or local park.",
+            "Adventure day - Outdoor activities.",
+            "Final day - Departure."
+        };
 
-        // Loop through the days and add the respective activity to the itinerary
+        // Loop through the days and add activities
         for (int day = 1; day <= days; day++)
         {
-            // Check if the day exceeds the number of predefined activities
             if (day <= activities.Count)
             {
                 Itinerary.Add($"Day {day}: {activities[day - 1]}");
             }
             else
             {
-                Itinerary.Add($"Day {day}: Explore more activities.");
+                Itinerary.Add($"Day {day}: Custom itinerary for this day.");
             }
         }
     }
 
-    // Helper method to determine the price per room based on the selected room type
+    // Helper method to get the room price based on the selected room type
     private static decimal GetRoomPrice(string roomType)
     {
-        switch (roomType)
+        return roomType switch
         {
-            case "Superior":
-                return 1500; // INR 1500 for Superior Room
-            case "Deluxe":
-                return 2000; // INR 2000 for Deluxe Room
-            case "Deluxe prem":
-                return 2500; // INR 2500 for Deluxe Premiere Room
-            case "Fam suite":
-                return 3000; // INR 3000 for Family Suite
-            default:
-                return 0; // Default case for invalid room type
-        }
+            // 3-Star Hotel Room Prices
+            "Superior-3star" => 1500m,
+            "Deluxe-3star" => 2000m,
+            "DeluxePremiere-3star" => 3000m,
+            "FamilySuite-3star" => 4000m,
+
+            // 4-Star Hotel Room Prices
+            "Superior-4star" => 2000m,
+            "Deluxe-4star" => 3000m,
+            "DeluxePremiere-4star" => 4000m,
+            "FamilySuite-4star" => 5000m,
+
+            // 5-Star Hotel Room Prices
+            "Superior-5star" => 3000m,
+            "Deluxe-5star" => 4000m,
+            "DeluxePremiere-5star" => 5000m,
+            "FamilySuite-5star" => 6000m,
+
+            // Default case for invalid room types
+            _ => 1000m
+        };
     }
 
-
+    // Method to calculate transportation based on total people and days
     private void CalculateTransportation(int days)
     {
         int totalPeople = Adults + Children;
@@ -229,25 +187,41 @@ public class QuotationModel : PageModel
         if (totalPeople <= 4)
         {
             SuggestedVehicle = "Car";
-            RentPerDay = 500; // Rent per day for Car
+            RentPerDay = 500;
         }
         else if (totalPeople <= 5)
         {
             SuggestedVehicle = "SUV";
-            RentPerDay = 800; // Rent per day for Mini Van
+            RentPerDay = 800;
         }
-        else if (totalPeople <= 6)
+        else if (totalPeople <= 7)
         {
             SuggestedVehicle = "Mini Van";
-            RentPerDay = 1000; // Rent per day for Mini Van
+            RentPerDay = 1000;
         }
         else
         {
             SuggestedVehicle = "Bus";
-            RentPerDay = 1500; // Rent per day for Bus
+            RentPerDay = 1500;
         }
 
-        // Calculate total rent based on the number of days
-        TotalRent = RentPerDay * Days;
+        // Calculate total rent
+        TotalRent = RentPerDay * days;
+    }
+
+    // Method to calculate per-head costs for adults, children with/without beds, and extra beds
+    private void CalculatePerHeadCosts(decimal roomPricePerNight, decimal pricePerChildWithBed, decimal pricePerExtraBed)
+    {
+        // Calculate per-head adult cost
+        PerHeadAdultCost = (Adults > 0) ? (Rooms * roomPricePerNight * Nights) / Adults : 0;
+
+        // Calculate per-head child with bed cost
+        PerHeadChildWithBedCost = (ChildrenWithBed > 0) ? (ChildrenWithBed * pricePerChildWithBed) / ChildrenWithBed : 0;
+
+        // Children without beds don't add to room cost
+        PerHeadChildWithoutBedCost = 0;
+
+        // Calculate per-head extra bed cost
+        PerHeadExtraBedCost = (ExtraBeds > 0) ? (ExtraBeds * pricePerExtraBed) / ExtraBeds : 0;
     }
 }

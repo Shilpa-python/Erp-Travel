@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 
 public class IndexModel : PageModel
@@ -23,9 +25,10 @@ public class IndexModel : PageModel
     public string? AgencyLocation { get; set; }
 
     [BindProperty]
-    public string? AgencyNumber { get; set; }
+    public int? AgencyNumber { get; set; }
 
-    public int Adults { get; set; }
+    [BindProperty]
+    public int Adults { get; set; } // Added BindProperty here
 
     [BindProperty]
     public int Children { get; set; }
@@ -220,6 +223,11 @@ public class IndexModel : PageModel
 
     public void OnPost()
     {
+        if (AgencyNumber == 0)
+        {
+            ModelState.AddModelError("AgencyNumber", "Agency Number cannot be zero.");
+            return;
+        }
         int totalPeople = Adults + Children;
         CalculateVehicleAndRent(totalPeople);
 
@@ -239,8 +247,14 @@ public class IndexModel : PageModel
         {
             GeneratedItinerary = GenerateAutoItinerary(Days);
         }
-
+        string agencyName = Request.Form["AgencyName"];
+        string agencyLocation = Request.Form["AgencyLocation"];
+        
         // Save the calculated data in TempData to pass to the Quotation page
+        TempData["AgencyName"] = AgencyName;
+        TempData["AgencyLocation"] = AgencyLocation;
+        TempData["AgencyNumber"] = AgencyNumber;
+        TempData["ArrivalDate "] = ArrivalDate;
         TempData["RoomType"] = RoomType;
         TempData["Rooms"] = Rooms;
         TempData["Nights"] = Nights;
@@ -251,6 +265,7 @@ public class IndexModel : PageModel
         TempData["SuggestedVehicle"] = SuggestedVehicle;
         TempData["RentPerDay"] = RentPerDay;
         TempData["TotalRent"] = TotalRent;
+        TempData["Itinerary"] = ItineraryList;  // Save itinerary to TempData for the Quotation page
 
         // Redirect to the Quotation page after form submission
         return RedirectToPage("Quotation");
