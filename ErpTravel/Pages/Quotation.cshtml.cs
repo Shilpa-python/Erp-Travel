@@ -11,6 +11,9 @@ public class QuotationModel : PageModel
     public string? AgencyLocation { get; set; }
 
     [BindProperty]
+    public DateTime ArrivalDate { get; set; }
+
+    [BindProperty]
     public int Adults { get; set; }
 
     [BindProperty]
@@ -34,9 +37,9 @@ public class QuotationModel : PageModel
     [BindProperty]
     public int Days { get; set; }
 
-    
 
-   
+
+
     [BindProperty]
     public string? RoomType { get; set; }
 
@@ -52,9 +55,19 @@ public class QuotationModel : PageModel
     [BindProperty]
     public decimal TotalRent { get; set; }
 
-   
+    
+   /* public class RoomPreference
+    {
+        public string? roomType { get; set; }
+        public string? pricePerRoom { get; set; }
+        public decimal totalPrice { get; set; }
+    }*/
 
-    public decimal PerHeadAdultCost { get; set; }
+
+
+
+
+public decimal PerHeadAdultCost { get; set; }
     public decimal PerHeadChildWithBedCost { get; set; }
     public decimal PerHeadChildWithoutBedCost { get; set; }
     public decimal PerHeadExtraBedCost { get; set; }
@@ -212,16 +225,46 @@ public class QuotationModel : PageModel
     // Method to calculate per-head costs for adults, children with/without beds, and extra beds
     private void CalculatePerHeadCosts(decimal roomPricePerNight, decimal pricePerChildWithBed, decimal pricePerExtraBed)
     {
+        // Total room cost for adults, children with bed, and extra beds
+        decimal totalRoomCostForAdults = (Rooms * roomPricePerNight * Nights);
+        decimal totalChildWithBedCost = (ChildrenWithBed * pricePerChildWithBed);
+        decimal totalExtraBedCost = (ExtraBeds * pricePerExtraBed);
+
         // Calculate per-head adult cost
-        PerHeadAdultCost = (Adults > 0) ? (Rooms * roomPricePerNight * Nights) / Adults : 0;
+        if (Adults > 0)
+        {
+            PerHeadAdultCost = totalRoomCostForAdults / Adults;
+        }
+        else
+        {
+            PerHeadAdultCost = 0;
+        }
 
         // Calculate per-head child with bed cost
-        PerHeadChildWithBedCost = (ChildrenWithBed > 0) ? (ChildrenWithBed * pricePerChildWithBed) / ChildrenWithBed : 0;
+        if (ChildrenWithBed > 0)
+        {
+            PerHeadChildWithBedCost = totalChildWithBedCost / ChildrenWithBed;
+        }
+        else
+        {
+            PerHeadChildWithBedCost = 0;
+        }
 
-        // Children without beds don't add to room cost
+        // Children without beds don't add to room cost, but we'll add a placeholder in case future calculations change
         PerHeadChildWithoutBedCost = 0;
 
         // Calculate per-head extra bed cost
-        PerHeadExtraBedCost = (ExtraBeds > 0) ? (ExtraBeds * pricePerExtraBed) / ExtraBeds : 0;
+        if (ExtraBeds > 0)
+        {
+            PerHeadExtraBedCost = totalExtraBedCost / ExtraBeds;
+        }
+        else
+        {
+            PerHeadExtraBedCost = 0;
+        }
+
+        // Correct handling for the total cost
+        TotalRoomAmount = totalRoomCostForAdults + totalChildWithBedCost + totalExtraBedCost;
     }
 }
+

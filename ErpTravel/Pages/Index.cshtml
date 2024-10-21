@@ -187,17 +187,20 @@
     function updateRoomOptions() {
         const adults = parseInt(document.getElementById('adults').value);
         const children = parseInt(document.getElementById('children').value) || 0;
-        const totalOccupants = adults + children; // Calculate total occupants (adults + children)
+        const totalOccupants = adults + children; // Total occupants (adults + children)
+        const roomCount = parseInt(document.getElementById('rooms').value) || 1; // Get the selected number of rooms
+        const occupantsPerRoom = Math.ceil(totalOccupants / roomCount); // Calculate occupants per room
+
         const roomSelect = document.getElementById('room');
         roomSelect.innerHTML = ''; // Clear current options
 
-        // Define room type availability based on the total number of occupants (adults + children)
+        // Define room type availability based on the number of occupants per room
         let availableOptions = [];
-        if (totalOccupants >= 1 && totalOccupants <= 2) {
+        if (occupantsPerRoom >= 1 && occupantsPerRoom <= 2) {
             availableOptions = ['Superior', 'Deluxe'];
-        } else if (totalOccupants == 3) {
+        } else if (occupantsPerRoom == 3) {
             availableOptions = ['Deluxe', 'DeluxePremiere'];
-        } else if (totalOccupants >= 4 && totalOccupants <= 8) {
+        } else if (occupantsPerRoom >= 4 && occupantsPerRoom <= 8) {
             availableOptions = ['FamilySuite'];
         }
 
@@ -225,12 +228,11 @@
     }
 
 
-        function calculateTotal() {
+
+    function calculateTotal() {
         // Get the values from the form
         var rooms = parseInt(document.getElementById("rooms").value) || 0;
-
         var nights = parseInt(document.getElementById("Nights").value) || 0;
-
         var cwb = parseInt(document.getElementById("cwb").value) || 0;
         var pricePerBed = 150; // Assuming price for each bed; update as needed
         var totalCWB = cwb * pricePerBed; // Calculate total for children with bed
@@ -242,14 +244,12 @@
         var roomSelect = document.getElementById("room");
         var pricePerRoom = parseFloat(roomSelect.options[roomSelect.selectedIndex].getAttribute('data-price')) || 0;
 
-        var totalAmount = (rooms * pricePerRoom * nights) + totalCWB + totalExtraBeds ;
+        var totalAmount = (rooms * pricePerRoom * nights) + totalCWB + totalExtraBeds;
 
         // Display the total amount
         document.getElementById("totalAmount").textContent = "INR " + totalAmount.toFixed(2);
         document.getElementById("totalAmountHidden").value = totalAmount;
-
     }
-    
 
     function addRoomPreference() {
         const adults = parseInt(document.getElementById('adults').value);
@@ -273,6 +273,7 @@
         div.appendChild(roomSelect);
         roomPreferencesContainer.appendChild(div);
     }
+
     
      
     function updateVehicleSuggestion() {

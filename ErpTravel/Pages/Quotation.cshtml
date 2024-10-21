@@ -5,143 +5,137 @@
 
     var travelagency = TempData["AgencyName"] as string;
     var agencylocation = TempData["AgencyLocation"] as string;
-    //var agencynumber = TempData["AgencyNumber"] as int?;
     var rooms = TempData["Rooms"] as int?;
     var nights = TempData["Nights"] as int?;
     var roomType = TempData["RoomType"] as string;
     var extraBeds = TempData["ExtraBeds"] as int?;
     var childrenWithBed = TempData["ChildrenWithBed"] as int?;
     var childrenWithoutBed = TempData["ChildrenWithoutBed"] as int?;
-   
     var totalAmount = TempData["TotalAmount"] as decimal?;
     var suggestedVehicle = TempData["SuggestedVehicle"] as string;
     var rentPerDay = TempData["RentPerDay"] as decimal?;
     var totalRent = TempData["TotalRent"] as decimal?;
     var itinerary = TempData["Itinerary"] as List<string>;
 
-    
-
     // Initialize the number of adults and nights
     var numberOfAdults = Model.Adults;
     var numberOfNights = Model.Nights;
-   
 
     var hotels = new List<(string Name, decimal Price)>();
 
-    if (string.IsNullOrEmpty(Model.RoomType))
+    // Switch case for populating hotel list based on room type
+    if (!string.IsNullOrEmpty(Model.RoomType))
     {
-        <p>No room type selected.</p>
+       
+        switch (Model.RoomType)
+        {
+            case "Superior-3star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Hai Tide Beach Resort - 3 Star Superior", 1500m),
+                    ("Pramana Watu Kurung - 3 Star Superior", 1600m),
+                    ("Ramayana Suites - 3 Star Superior", 1700m)
+                };
+                break;
+            case "Deluxe-3star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Hai Tide Beach Resort - 3 Star Deluxe", 2000m),
+                    ("Pramana Watu Kurung - 3 Star Deluxe", 2100m),
+                    ("Ramayana Suites - 3 Star Deluxe", 2200m)
+                };
+                break;
+            case "Deluxe Premiere-3star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Hai Tide Beach Resort - 3 Star Deluxe Premiere", 3000m),
+                    ("Pramana Watu Kurung - 3 Star Deluxe Premiere", 3100m),
+                    ("Ramayana Suites - 3 Star Deluxe Premiere", 3200m)
+                };
+                break;
+            case "Family Suite-3star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Hai Tide Beach Resort - 3 Star Family Suite", 4000m),
+                    ("Pramana Watu Kurung - 3 Star Family Suite", 4100m),
+                    ("Ramayana Suites - 3 Star Family Suite", 4200m)
+                };
+                break;
+            case "Superior-4star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Amnaya Resort Kuta - 4 Star Superior", 2000m),
+                    ("Swiss Belhotel Tuban - 4 Star Superior", 2100m),
+                    ("Truntum Kuta - 4 Star Superior", 2200m)
+                };
+                break;
+            case "Deluxe-4star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Amnaya Resort Kuta - 4 Star Deluxe", 3000m),
+                    ("Swiss Belhotel Tuban - 4 Star Deluxe", 3100m),
+                    ("Truntum Kuta - 4 Star Deluxe", 3200m)
+                };
+                break;
+            case "Deluxe Premiere-4star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Amnaya Resort Kuta - 4 Star Deluxe Premiere", 4000m),
+                    ("Swiss Belhotel Tuban - 4 Star Deluxe Premiere", 4100m),
+                    ("Truntum Kuta - 4 Star Deluxe Premiere", 4200m)
+                };
+                break;
+            case "Family Suite-4star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Amnaya Resort Kuta - 4 Star Family Suite", 5000m),
+                    ("Swiss Belhotel Tuban - 4 Star Family Suite", 5100m),
+                    ("Truntum Kuta - 4 Star Family Suite", 5200m)
+                };
+                break;
+            case "Superior-5star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Padma Resort Ubud - 5 Star Superior", 3000m),
+                    ("Mulia Resort - 5 Star Superior", 3100m),
+                    ("Adiwana Bisma - 5 Star Superior", 3200m)
+                };
+                break;
+            case "Deluxe-5star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Padma Resort Ubud - 5 Star Deluxe", 4000m),
+                    ("Mulia Resort - 5 Star Deluxe", 4100m),
+                    ("Adiwana Bisma - 5 Star Deluxe", 4200m)
+                };
+                break;
+            case "Deluxe Premiere-5star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Padma Resort Ubud - 5 Star Deluxe Premiere", 5000m),
+                    ("Mulia Resort - 5 Star Deluxe Premiere", 5100m),
+                    ("Adiwana Bisma - 5 Star Deluxe Premiere", 5200m)
+                };
+                break;
+            case "Family Suite-5star":
+                hotels = new List<(string, decimal)>
+                {
+                    ("Padma Resort Ubud - 5 Star Family Suite", 6000m),
+                    ("Mulia Resort - 5 Star Family Suite", 6100m),
+                    ("Adiwana Bisma - 5 Star Family Suite", 6200m)
+                };
+                break;
+            default:
+                hotels = new List<(string, decimal)>
+                {
+                    ("No hotels available", 0m)
+                };
+                break;
+        }
     }
     else
     {
-        <p>Room Type: @Model.RoomType</p>
-    }
-    // Switch case for populating hotel list based on room type
-    switch (Model.RoomType)
-    {
-        case "Superior-3star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel A - 3 Star Superior", 1500m),
-                ("Hotel B - 3 Star Superior", 1600m),
-                ("Hotel C - 3 Star Superior", 1700m)
-            };
-            break;
-        case "Deluxe-3star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel A - 3 Star Deluxe", 2000m),
-                ("Hotel B - 3 Star Deluxe", 2100m),
-                ("Hotel C - 3 Star Deluxe", 2200m)
-            };
-            break;
-        case "Deluxe Premiere-3star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel A - 3 Star Deluxe Premiere", 3000m),
-                ("Hotel B - 3 Star Deluxe Premiere", 3100m),
-                ("Hotel C - 3 Star Deluxe Premiere", 3200m)
-            };
-            break;
-        case "Family Suite-3star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel A - 3 Star Family Suite", 4000m),
-                ("Hotel B - 3 Star Family Suite", 4100m),
-                ("Hotel C - 3 Star Family Suite", 4200m)
-            };
-            break;
-        case "Superior-4star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel D - 4 Star Superior", 2000m),
-                ("Hotel E - 4 Star Superior", 2100m),
-                ("Hotel F - 4 Star Superior", 2200m)
-            };
-            break;
-        case "Deluxe-4star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel D - 4 Star Deluxe", 3000m),
-                ("Hotel E - 4 Star Deluxe", 3100m),
-                ("Hotel F - 4 Star Deluxe", 3200m)
-            };
-            break;
-        case "Deluxe Premiere-4star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel D - 4 Star Deluxe Premiere", 4000m),
-                ("Hotel E - 4 Star Deluxe Premiere", 4100m),
-                ("Hotel F - 4 Star Deluxe Premiere", 4200m)
-            };
-            break;
-        case "Family Suite-4star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel D - 4 Star Family Suite", 5000m),
-                ("Hotel E - 4 Star Family Suite", 5100m),
-                ("Hotel F - 4 Star Family Suite", 5200m)
-            };
-            break;
-        case "Superior-5star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel G - 5 Star Superior", 3000m),
-                ("Hotel H - 5 Star Superior", 3100m),
-                ("Hotel I - 5 Star Superior", 3200m)
-            };
-            break;
-       
-        case "Deluxe-5star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel G - 5 Star Deluxe", 4000m),
-                ("Hotel H - 5 Star Deluxe", 4100m),
-                ("Hotel I - 5 Star Deluxe", 4200m)
-            };
-            break;
-        case "Deluxe Premiere-5star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel G - 5 Star Deluxe Premiere", 5000m),
-                ("Hotel H - 5 Star Deluxe Premiere", 5100m),
-                ("Hotel I - 5 Star Deluxe Premiere", 5200m)
-            };
-            break;
-        case "Family Suite-5star":
-            hotels = new List<(string, decimal)>
-            {
-                ("Hotel G - 5 Star Family Suite", 6000m),
-                ("Hotel H - 5 Star Family Suite", 6100m),
-                ("Hotel I - 5 Star Family Suite", 6200m)
-            };
-            break;
-        default:
-            hotels = new List<(string, decimal)>
-            {
-                ("No hotels available", 0m)
-            };
-            break;
+        <p>No room type selected.</p>
     }
 }
 
@@ -154,24 +148,26 @@
    
 
     <h4>Travel Details</h4>
+    <p><strong>Arrival Date:</strong> @Model.ArrivalDate</p>
     <p><strong>Number of Adults:</strong> @Model.Adults</p>
     <p><strong>Number of Children:</strong> @Model.Children</p>
     <p><strong>Number of Days:</strong> @Model.Days</p>
     <p><strong>Number of Nights:</strong> @Model.Nights</p>
 
-    <h4>Hotel Booking Details</h4>
+    <h4>Hotel Details</h4>
     <p><strong>Number of Rooms:</strong> @Model.Rooms</p>
     <p><strong>Number of Extra Beds:</strong> @Model.ExtraBeds</p>
     <p><strong>Number of Children with Bed:</strong> @Model.ChildrenWithBed</p>
     <p><strong>Number of Children without Bed:</strong> @Model.ChildrenWithoutBed</p>
 
    <h4>Available Hotels</h4>
+    <p><strong>Room Type:</strong> @Model.RoomType</p>
     <table class="hotel-table">
         <thead>
             <tr>
                 <th>Name of Hotel (Subject to Availability)</th>
-                <th>Price / Adult</th>
-                <th>Total Price (Adults x Nights)</th>
+                <th>Price per Head</th>
+                <th>Total Price </th>
             </tr>
         </thead>
         <tbody>
@@ -190,7 +186,7 @@
 
                     <tr>
                         <td>@hotel.Name</td>
-                        <td>INR @pricePerAdult.ToString("0.00") x @numberOfAdults Adults</td>
+                        <td>INR @pricePerAdult.ToString("0.00") x @numberOfAdults </td>
                         <td>INR @totalPrice.ToString("0.00")</td>
                     </tr>
                 }
@@ -198,49 +194,52 @@
         </tbody>
     </table>
 
+   
+
     <h4>Transportation</h4>
     <p><strong>Suggested Vehicle:</strong> @Model.SuggestedVehicle</p>
     <p><strong>Vehicle Rent per Day:</strong> INR @Model.RentPerDay.ToString("0.00")</p>
     <p><strong>Total Vehicle Rent:</strong> INR @Model.TotalRent.ToString("0.00")</p>
 
-    <h4>Itinerary</h4>
-    @if (Model.Itinerary != null && Model.Itinerary.Any())
-    {
-        <ul>
-            @foreach (var itineraryItem in Model.Itinerary)
-            {
-                <li>@itineraryItem</li>
-            }
-        </ul>
-    }
-    else if (!string.IsNullOrEmpty(Model.SelectedItinerary))
-    {
-        <p>Selected Itinerary: @Model.SelectedItinerary</p>
-        <ul>
-            @if (Model.SelectedItinerary == "Itinerary1")
-            {
-                <li>Day 1: Arrival and City Tour.</li>
-                <li>Day 2: Cultural visits and Museums.</li>
-                <li>Day 3: Departure.</li>
-            }
-            else if (Model.SelectedItinerary == "Itinerary2")
-            {
-                <li>Day 1: Adventure Trek.</li>
-                <li>Day 2: Nature walk and Safari.</li>
-                <li>Day 3: Departure.</li>
-            }
-            else if (Model.SelectedItinerary == "Itinerary3")
-            {
-                <li>Day 1: Relax on the Beach.</li>
-                <li>Day 2: Explore the Coastal town.</li>
-                <li>Day 3: Departure.</li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No itinerary available.</p>
-    }
+   <h4>Itinerary</h4>
+@if (Model.Itinerary != null && Model.Itinerary.Count > 0)
+{
+    <ul>
+        @foreach (var itineraryItem in Model.Itinerary)
+        {
+            <li>@itineraryItem</li>
+        }
+    </ul>
+}
+else if (!string.IsNullOrEmpty(Model.SelectedItinerary))
+{
+    <p>Selected Itinerary: @Model.SelectedItinerary</p>
+    <ul>
+        @if (Model.SelectedItinerary == "Itinerary1")
+        {
+            <li>Day 1: Arrival and City Tour.</li>
+            <li>Day 2: Cultural visits and Museums.</li>
+            <li>Day 3: Departure.</li>
+        }
+        else if (Model.SelectedItinerary == "Itinerary2")
+        {
+            <li>Day 1: Adventure Trek.</li>
+            <li>Day 2: Nature walk and Safari.</li>
+            <li>Day 3: Departure.</li>
+        }
+        else if (Model.SelectedItinerary == "Itinerary3")
+        {
+            <li>Day 1: Relax on the Beach.</li>
+            <li>Day 2: Explore the Coastal town.</li>
+            <li>Day 3: Departure.</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No itinerary available.</p>
+}
+
 
     <h4>Cost Breakdown Per Head:</h4>
     <p><strong>Cost per Adult:</strong> INR @Model.PerHeadAdultCost.ToString("0.00")</p>
